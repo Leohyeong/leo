@@ -18,6 +18,7 @@ def get_start_time(ticker):
     start_time = df.index[0]
     return start_time
 
+
 def get_balance(ticker):
     """잔고 조회"""
     balances = upbit.get_balances()
@@ -53,7 +54,7 @@ while True:
         else:
             xrp = get_balance("XRP")
             if xrp > 2.77:
-                upbit.sell_market_order("KRW-XRP", btc*0.9995)
+                upbit.sell_market_order("KRW-XRP", xrp*0.9995)
         time.sleep(1)
     except Exception as e:
         print(e)
