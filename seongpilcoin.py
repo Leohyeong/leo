@@ -48,7 +48,7 @@ while True:
         end_time = start_time + datetime.timedelta(days=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(coin, 0.5)
+            target_price = get_target_price(coin, 0.4)
             current_price = get_current_price(coin)
             if target_price == current_price:
                 krw = get_balance("KRW")
