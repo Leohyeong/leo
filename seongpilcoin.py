@@ -2,8 +2,8 @@ import time
 import pyupbit
 import datetime
 
-access = "TiBEHByAp4g0oCT4DgJKAYm0keAbbsDPQjGM7MJZ"
-secret = "hH4odKNRne3OUjPD7302qawC0A5g0pJ9FHV0xxU4"
+access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
+secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 coin_name = "DOGE"
 coin = "KRW-DOGE"
