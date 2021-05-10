@@ -5,8 +5,8 @@ import datetime
 access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
-coin_name = "DOGE"
-coin = "KRW-DOGE"
+coin_name = "XRP"
+coin = "KRW-XRP"
 
 def get_target_price(ticker, k):
     """변동성 돌파 전략으로 매수 목표가 조회"""
@@ -48,16 +48,16 @@ while True:
         end_time = start_time + datetime.timedelta(days=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(coin, 0.2)
+            target_price = get_target_price(coin, 0.5)
             current_price = get_current_price(coin)
-            if target_price == current_price:
+            if target_price < current_price:
                 krw = get_balance("KRW")
                 if krw > 5000:
                     upbit.buy_market_order(coin, krw*0.9995)
         else:
             doge = get_balance(coin_name)
-            if doge > 10.7:
-                upbit.sell_market_order(coin, doge*0.9995)
+            if xrp > 2.6:
+                upbit.sell_market_order(coin, xrp*0.9995)
         time.sleep(1)
     except Exception as e:
         print(e)
