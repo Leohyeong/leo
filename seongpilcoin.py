@@ -5,11 +5,20 @@ import datetime
 access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
-coin_name = "XRP"
-coin = "KRW-XRP"
+XRP_balance = "XRP"
+XRPcoin = "KRW-XRP"
+
+ETH_balance = "ETH"
+ETHcoin = "KRW-ETH"
+
+DOGE_balance = "DOGE"
+DOGEcoin = "KRW-DOGE"
+
+ETC_balance = "ETC"
+ETCcoin = "KRW-ETC"
 
 def get_target_price(ticker, k):
-    """변동성 돌파 전략으로 매수 목표가 조회"""
+    """변동성 돌파 전략 매수 목표가 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="minute60", count=2)
     target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
     return target_price
@@ -45,27 +54,111 @@ def get_current_price(ticker):
 
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
+
 print("autotrade start")
 
 # 자동매매 시작
 while True:
+
+################################## XRP ##################################
+
     try:
         now = datetime.datetime.now()
-        start_time = get_start_time(coin)
+        start_time = get_start_time(XRPcoin)
         end_time = start_time + datetime.timedelta(hours=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(coin, 0.5)
-            ma20 = get_ma20(coin)
-            current_price = get_current_price(coin)
+            target_price = get_target_price(XRPcoin, 0.5)
+            ma20 = get_ma20(XRPcoin)
+            current_price = get_current_price(XRPcoin)
             if target_price < current_price and ma20 < current_price:
                 krw = get_balance("KRW")
                 if krw > 5000:
-                    upbit.buy_market_order(coin, krw*0.9995)
+                    upbit.buy_market_order(XRPcoin, krw*0.9995)
+                    print("BUY XRP COIN")
         else:
-            xrp = get_balance(coin_name)
+            xrp = get_balance(XRP_balance)
             if xrp > 2.7:
-                upbit.sell_market_order(coin, xrp*0.9995)
+                upbit.sell_market_order(XRPcoin, xrp*0.9995)
+                print("SELL XRP COIN")
+        time.sleep(1)
+    except Exception as e:
+        print(e)
+        time.sleep(1)
+
+################################## ETH ##################################
+
+    try:
+        now = datetime.datetime.now()
+        start_time = get_start_time(ETHcoin)
+        end_time = start_time + datetime.timedelta(hours=1)
+
+        if start_time < now < end_time - datetime.timedelta(seconds=10):
+            target_price = get_target_price(ETHcoin, 0.5)
+            ma20 = get_ma20(ETHcoin)
+            current_price = get_current_price(ETHcoin)
+            if target_price < current_price and ma20 < current_price:
+                krw = get_balance("KRW")
+                if krw > 5000:
+                    upbit.buy_market_order(ETHcoin, krw*0.9995)
+                    print("BUY ETH COIN")
+        else:
+            eth = get_balance(ETH_balance)
+            if eth > 0.0009:
+                upbit.sell_market_order(ETHcoin, eth*0.9995)
+                print("SELL ETH COIN")
+        time.sleep(1)
+    except Exception as e:
+        print(e)
+        time.sleep(1)
+    
+################################## DOGE ##################################
+
+    try:
+        now = datetime.datetime.now()
+        start_time = get_start_time(DOGEcoin)
+        end_time = start_time + datetime.timedelta(hours=1)
+
+        if start_time < now < end_time - datetime.timedelta(seconds=10):
+            target_price = get_target_price(DOGEcoin, 0.5)
+            ma20 = get_ma20(DOGEcoin)
+            current_price = get_current_price(DOGEcoin)
+            if target_price < current_price and ma20 < current_price:
+                krw = get_balance("KRW")
+                if krw > 5000:
+                    upbit.buy_market_order(DOGEcoin, krw*0.9995)
+                    print("BUY DOGE COIN")
+        else:
+            doge = get_balance(DOGE_balance)
+            if doge > 8.2:
+                upbit.sell_market_order(DOGEcoin, doge*0.9995)
+                print("SELL DOGE COIN")
+        time.sleep(1)
+    except Exception as e:
+        print(e)
+        time.sleep(1)
+
+################################## ETC ##################################
+
+    try:
+        now = datetime.datetime.now()
+        start_time = get_start_time(ETCcoin)
+        end_time = start_time + datetime.timedelta(hours=1)
+
+        if start_time < now < end_time - datetime.timedelta(seconds=10):
+            target_price = get_target_price(ETCcoin, 0.5)
+            ma20 = get_ma20(ETCcoin)
+            current_price = get_current_price(ETCcoin)
+            if target_price < current_price and ma20 < current_price:
+                krw = get_balance("KRW")
+                if krw > 5000:
+                    upbit.buy_market_order(ETCcoin, krw*0.9995)
+                    print("BUY ETC COIN")
+        else:
+            etc = get_balance(ETC_balance)
+            if etc > 0.036:
+                upbit.sell_market_order(ETCcoin, etc*0.9995)
+                print("SELL ETC COIN")
         time.sleep(1)
     except Exception as e:
         print(e)
