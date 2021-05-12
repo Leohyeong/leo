@@ -68,7 +68,7 @@ while True:
         end_time = start_time + datetime.timedelta(hours=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(XRPcoin, 0.5)
+            target_price = get_target_price(XRPcoin, 0.4)
             ma20 = get_ma20(XRPcoin)
             current_price = get_current_price(XRPcoin)
             if target_price < current_price and ma20 < current_price:
@@ -94,7 +94,7 @@ while True:
         end_time = start_time + datetime.timedelta(hours=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(ETHcoin, 0.5)
+            target_price = get_target_price(ETHcoin, 0.6)
             ma20 = get_ma20(ETHcoin)
             current_price = get_current_price(ETHcoin)
             if target_price < current_price and ma20 < current_price:
@@ -146,7 +146,7 @@ while True:
         end_time = start_time + datetime.timedelta(hours=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(ETCcoin, 0.5)
+            target_price = get_target_price(ETCcoin, 0.2)
             ma20 = get_ma20(ETCcoin)
             current_price = get_current_price(ETCcoin)
             if target_price < current_price and ma20 < current_price:
