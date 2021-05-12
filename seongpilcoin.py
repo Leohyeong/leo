@@ -26,8 +26,8 @@ def get_target_price(ticker, k):
 
 
 def get_ma20(ticker):
-    """20일 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+    """20시간 이동 평균선 조회"""
+    df = pyupbit.get_ohlcv(ticker, interval="minute60", count=20)
     ma20 = df['close'].rolling(20).mean().iloc[-1]
     return ma20
 
@@ -79,7 +79,7 @@ while True:
         else:
             xrp = get_balance(XRP_balance)
             if xrp > 2.7:
-                upbit.sell_market_order(XRPcoin, xrp*0.9995)
+                upbit.sell_market_order(XRPcoin, xrp)
                 print("SELL XRP COIN")
         time.sleep(1)
     except Exception as e:
@@ -105,7 +105,7 @@ while True:
         else:
             eth = get_balance(ETH_balance)
             if eth > 0.0009:
-                upbit.sell_market_order(ETHcoin, eth*0.9995)
+                upbit.sell_market_order(ETHcoin, eth)
                 print("SELL ETH COIN")
         time.sleep(1)
     except Exception as e:
@@ -131,7 +131,7 @@ while True:
         else:
             doge = get_balance(DOGE_balance)
             if doge > 8.2:
-                upbit.sell_market_order(DOGEcoin, doge*0.9995)
+                upbit.sell_market_order(DOGEcoin, doge)
                 print("SELL DOGE COIN")
         time.sleep(1)
     except Exception as e:
@@ -157,7 +157,7 @@ while True:
         else:
             etc = get_balance(ETC_balance)
             if etc > 0.036:
-                upbit.sell_market_order(ETCcoin, etc*0.9995)
+                upbit.sell_market_order(ETCcoin, etc)
                 print("SELL ETC COIN")
         time.sleep(1)
     except Exception as e:
