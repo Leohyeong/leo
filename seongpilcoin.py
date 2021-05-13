@@ -72,7 +72,7 @@ while True:
             ma20 = get_ma20(XRPcoin)
             current_price = get_current_price(XRPcoin)
             if target_price < current_price and ma20 < current_price:
-                if target_price == current_price
+                if target_price == current_price:
                     krw = get_balance("KRW")
                     if krw > 5000:
                      upbit.buy_market_order(XRPcoin, krw*0.9995)
@@ -99,7 +99,7 @@ while True:
             ma20 = get_ma20(ETHcoin)
             current_price = get_current_price(ETHcoin)
             if target_price < current_price and ma20 < current_price:
-                if target_price == current_price
+                if target_price == current_price:
                     krw = get_balance("KRW")
                     if krw > 5000:
                         upbit.buy_market_order(ETHcoin, krw*0.9995)
@@ -126,7 +126,7 @@ while True:
             ma20 = get_ma20(DOGEcoin)
             current_price = get_current_price(DOGEcoin)
             if target_price < current_price and ma20 < current_price:
-                if target_price == current_price
+                if target_price == current_price:
                     krw = get_balance("KRW")
                     if krw > 5000:
                         upbit.buy_market_order(DOGEcoin, krw*0.9995)
@@ -153,7 +153,7 @@ while True:
             ma20 = get_ma20(ETCcoin)
             current_price = get_current_price(ETCcoin)
             if target_price < current_price and ma20 < current_price:
-                if target_price == current_price
+                if target_price == current_price:
                     krw = get_balance("KRW")
                     if krw > 5000:
                         upbit.buy_market_order(ETCcoin, krw*0.9995)
