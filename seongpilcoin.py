@@ -52,7 +52,7 @@ def get_balance(ticker):
                 return float(b['balance'])
             else:
                 return 0
-
+    return 0
 def get_current_price(ticker):
     """현재가 조회"""
     return pyupbit.get_orderbook(tickers=ticker)[0]["orderbook_units"][0]["ask_price"]
@@ -77,12 +77,12 @@ while True:
             target_price = get_target_price(XRPcoin, k_xrp)
             ma20 = get_ma20(XRPcoin)
             current_price = get_current_price(XRPcoin)
-            if target_price < current_price and ma20 < current_price:
-                if target_price == current_price:
-                    krw = get_balance("KRW")
-                    if krw > 5000:
-                     upbit.buy_market_order(XRPcoin, krw*0.9995)
-                     print("BUY XRP COIN")
+            if ma20 < target_price < current_price:
+                krw = get_balance("KRW")
+                xrp = get_balance(XRP_balance)
+                if krw > 5000 and xrp < 2.7:
+                    upbit.buy_market_order(XRPcoin, 50000)
+                    print("BUY XRP COIN")
         else:
             xrp = get_balance(XRP_balance)
             if xrp > 2.7:
@@ -104,12 +104,12 @@ while True:
             target_price = get_target_price(ETHcoin, k_eth)
             ma20 = get_ma20(ETHcoin)
             current_price = get_current_price(ETHcoin)
-            if target_price < current_price and ma20 < current_price:
-                if target_price == current_price:
-                    krw = get_balance("KRW")
-                    if krw > 5000:
-                        upbit.buy_market_order(ETHcoin, krw*0.9995)
-                        print("BUY ETH COIN")
+            if ma20 < target_price < current_price:
+                krw = get_balance("KRW")
+                eth = get_balance(ETH_balance)
+                if krw > 5000 and eth < 0.0009:
+                    upbit.buy_market_order(ETHcoin, 50000)
+                    print("BUY ETH COIN")
         else:
             eth = get_balance(ETH_balance)
             if eth > 0.0009:
@@ -131,12 +131,12 @@ while True:
             target_price = get_target_price(DOGEcoin, k_doge)
             ma20 = get_ma20(DOGEcoin)
             current_price = get_current_price(DOGEcoin)
-            if target_price < current_price and ma20 < current_price:
-                if target_price == current_price:
-                    krw = get_balance("KRW")
-                    if krw > 5000:
-                        upbit.buy_market_order(DOGEcoin, krw*0.9995)
-                        print("BUY DOGE COIN")
+            if ma20 < target_price < current_price:
+                krw = get_balance("KRW")
+                doge = get_balance(DOGE_balance)
+                if krw > 5000 and doge < 8.2:
+                    upbit.buy_market_order(DOGEcoin, 50000)
+                    print("BUY DOGE COIN")
         else:
             doge = get_balance(DOGE_balance)
             if doge > 8.2:
@@ -158,12 +158,12 @@ while True:
             target_price = get_target_price(ETCcoin, k_etc)
             ma20 = get_ma20(ETCcoin)
             current_price = get_current_price(ETCcoin)
-            if target_price < current_price and ma20 < current_price:
-                if target_price == current_price:
-                    krw = get_balance("KRW")
-                    if krw > 5000:
-                        upbit.buy_market_order(ETCcoin, krw*0.9995)
-                        print("BUY ETC COIN")
+            if ma20 < target_price < current_price:
+                krw = get_balance("KRW")
+                etc = get_balance(ETC_balance)
+                if krw > 5000 and etc < 0.036:
+                    upbit.buy_market_order(ETCcoin, 50000)
+                    print("BUY ETC COIN")
         else:
             etc = get_balance(ETC_balance)
             if etc > 0.036:
