@@ -1,175 +1,303 @@
-import time
 import pyupbit
-import datetime
+import numpy as np
+import time
+from datetime import date, datetime, timedelta
 
-access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
-secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
+## Initial ##
+
+
+doge = "KRW-DOGE"
+eth = "KRW-ETH"
+etc = "KRW-ETC"
+xrp = "KRW-XRP"
+ada = "KRW-ADA"
+eos = "KRW-EOS"
 
 k_doge = 0.1
 k_eth = 0.6
 k_etc = 0.5
 k_xrp = 0.2
-
-XRP_balance = "XRP"
-XRPcoin = "KRW-XRP"
-
-ETH_balance = "ETH"
-ETHcoin = "KRW-ETH"
-
-DOGE_balance = "DOGE"
-DOGEcoin = "KRW-DOGE"
-
-ETC_balance = "ETC"
-ETCcoin = "KRW-ETC"
-
-def get_target_price(ticker, k):
-    """변동성 돌파 전략 매수 목표가 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="minute60", count=2)
-    target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
-    return target_price
-    # 시가 + 변동폭
+k_ada = 0.6
+k_eos = 0.1
 
 
-def get_ma20(ticker):
-    """20시간 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="minute60", count=20)
-    ma20 = df['close'].rolling(20).mean().iloc[-1]
-    return ma20
+trade_hours60 = "minute60"
+trade_hours240 = "minute240"
+hour_counts = 48
 
-def get_start_time(ticker):
-    """시작 시간 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="minute60", count=1)
-    start_time = df.index[0]
-    return start_time
+## Balance ##
 
+access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
+secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
-def get_balance(ticker):
-    """잔고 조회"""
-    balances = upbit.get_balances()
-    for b in balances:
-        if b['currency'] == ticker:
-            if b['balance'] is not None:
-                return float(b['balance'])
-            else:
-                return 0
-    return 0
-def get_current_price(ticker):
-    """현재가 조회"""
-    return pyupbit.get_orderbook(tickers=ticker)[0]["orderbook_units"][0]["ask_price"]
+upbit = pyupbit.Upbit(access,secret)
 
-# 로그인
-upbit = pyupbit.Upbit(access, secret)
+## date ##
 
-print("autotrade start")
+start_day = datetime(2021,5,10)
+# start_day = datetime(2021,2,20)
+today = datetime.now()
+days = (today-start_day).days
 
 
-# 자동매매 시작
-while True:
 
-################################## XRP ##################################
+###########        DOGE        ############
 
-    try:
-        now = datetime.datetime.now()
-        start_time = get_start_time(XRPcoin)
-        end_time = start_time + datetime.timedelta(hours=1)
+def get_ror(kt=0.5):
+    df = pyupbit.get_ohlcv(doge,interval=trade_hours60, count = hour_counts)
+    df['range'] = (df['high'] - df['low']) * kt
+    df['target'] = df['open'] + df['range'].shift(1)
 
-        if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(XRPcoin, k_xrp)
-            ma20 = get_ma20(XRPcoin)
-            current_price = get_current_price(XRPcoin)
-            if ma20 < target_price < current_price:
-                krw = get_balance("KRW")
-                xrp = get_balance(XRP_balance)
-                if krw > 5000 and xrp < 2.7:
-                    upbit.buy_market_order(XRPcoin, 50000)
-                    print("BUY XRP COIN")
-        else:
-            xrp = get_balance(XRP_balance)
-            if xrp > 2.7:
-                upbit.sell_market_order(XRPcoin, xrp)
-                print("SELL XRP COIN")
-        time.sleep(1)
-    except Exception as e:
-        print(e)
-        time.sleep(1)
+    fee = 0.0005
+    df['ror'] = np.where(df['high'] > df['target'],
+                         df['close'] / df['target'] - fee,
+                         1)
 
-################################## ETH ##################################
+    ror = df['ror'].cumprod()[-2]
+    return ror
 
-    try:
-        now = datetime.datetime.now()
-        start_time = get_start_time(ETHcoin)
-        end_time = start_time + datetime.timedelta(hours=1)
+for kt in np.arange(0.1, 1.0, 0.1):
+    ror = get_ror(kt)
+    print("%.1f %f" % (kt, ror))
 
-        if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(ETHcoin, k_eth)
-            ma20 = get_ma20(ETHcoin)
-            current_price = get_current_price(ETHcoin)
-            if ma20 < target_price < current_price:
-                krw = get_balance("KRW")
-                eth = get_balance(ETH_balance)
-                if krw > 5000 and eth < 0.0009:
-                    upbit.buy_market_order(ETHcoin, 50000)
-                    print("BUY ETH COIN")
-        else:
-            eth = get_balance(ETH_balance)
-            if eth > 0.0009:
-                upbit.sell_market_order(ETHcoin, eth)
-                print("SELL ETH COIN")
-        time.sleep(1)
-    except Exception as e:
-        print(e)
-        time.sleep(1)
-    
-################################## DOGE ##################################
 
-    try:
-        now = datetime.datetime.now()
-        start_time = get_start_time(DOGEcoin)
-        end_time = start_time + datetime.timedelta(hours=1)
+k = 0.5
 
-        if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(DOGEcoin, k_doge)
-            ma20 = get_ma20(DOGEcoin)
-            current_price = get_current_price(DOGEcoin)
-            if ma20 < target_price < current_price:
-                krw = get_balance("KRW")
-                doge = get_balance(DOGE_balance)
-                if krw > 5000 and doge < 8.2:
-                    upbit.buy_market_order(DOGEcoin, 50000)
-                    print("BUY DOGE COIN")
-        else:
-            doge = get_balance(DOGE_balance)
-            if doge > 8.2:
-                upbit.sell_market_order(DOGEcoin, doge)
-                print("SELL DOGE COIN")
-        time.sleep(1)
-    except Exception as e:
-        print(e)
-        time.sleep(1)
+df = pyupbit.get_ohlcv(doge,interval=trade_hours60, count = hour_counts)
+df['range'] = (df['high'] - df['low']) * k_doge
+df['target'] = df['open'] + df['range'].shift(1)
 
-################################## ETC ##################################
+fee = 0.0005
 
-    try:
-        now = datetime.datetime.now()
-        start_time = get_start_time(ETCcoin)
-        end_time = start_time + datetime.timedelta(hours=1)
+df['ror_tempt'] = np.where(df['high'] > df['target'],
+                     df['close'] / df['target'] - fee,
+                     1)
+df['hpr_tempt'] = df['ror_tempt'].cumprod() # 누적수익률
 
-        if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(ETCcoin, k_etc)
-            ma20 = get_ma20(ETCcoin)
-            current_price = get_current_price(ETCcoin)
-            if ma20 < target_price < current_price:
-                krw = get_balance("KRW")
-                etc = get_balance(ETC_balance)
-                if krw > 5000 and etc < 0.036:
-                    upbit.buy_market_order(ETCcoin, 50000)
-                    print("BUY ETC COIN")
-        else:
-            etc = get_balance(ETC_balance)
-            if etc > 0.036:
-                upbit.sell_market_order(ETCcoin, etc)
-                print("SELL ETC COIN")
-        time.sleep(1)
-    except Exception as e:
-        print(e)
-        time.sleep(1)
+df['ror'] = 100 * (np.where(df['high'] > df['target'], # 수익률 // (조건문, 참일때 값, 거짓일때 값)
+                     df['close'] / df['target'] - fee,
+                     1) - 1)
+df['hpr'] = 100 * (df['ror_tempt'].cumprod() - 1) # 누적수익률
+
+df['loss'] = (df['hpr_tempt'].cummax() - df['hpr_tempt']) / df['hpr_tempt'].cummax() * 100 # (누적최대값과 현재 hpr / 누적 최대값 * 100)
+
+print("MDD(%): ", df['loss'].max(), doge)
+df.to_excel("loss.xlsx")
+
+print(df)
+
+# ###########        ETH        ############
+
+def get_ror(kt=0.5):
+    df = pyupbit.get_ohlcv(eth,interval=trade_hours60, count = hour_counts)
+    df['range'] = (df['high'] - df['low']) * kt
+    df['target'] = df['open'] + df['range'].shift(1)
+
+    fee = 0.0005
+    df['ror'] = np.where(df['high'] > df['target'],
+                         df['close'] / df['target'] - fee,
+                         1)
+
+    ror = df['ror'].cumprod()[-2]
+    return ror
+
+for kt in np.arange(0.1, 1.0, 0.1):
+    ror = get_ror(kt)
+    print("%.1f %f" % (kt, ror))
+
+df = pyupbit.get_ohlcv(eth, interval=trade_hours60, count = hour_counts)
+df['range'] = (df['high'] - df['low']) * k_eth
+df['target'] = df['open'] + df['range'].shift(1)
+
+fee = 0.0005
+
+df['ror_tempt'] = np.where(df['high'] > df['target'],
+                     df['close'] / df['target'] - fee,
+                     1)
+df['hpr_tempt'] = df['ror_tempt'].cumprod() # 누적수익률
+
+df['ror'] = 100 * (np.where(df['high'] > df['target'], # 수익률 // (조건문, 참일때 값, 거짓일때 값)
+                     df['close'] / df['target'] - fee,
+                     1) - 1)
+df['hpr'] = 100 * (df['ror_tempt'].cumprod() - 1) # 누적수익률
+
+df['loss'] = (df['hpr_tempt'].cummax() - df['hpr_tempt']) / df['hpr_tempt'].cummax() * 100 # (누적최대값과 현재 hpr / 누적 최대값 * 100)
+
+print("MDD(%): ", df['loss'].max(), eth)
+df.to_excel("loss.xlsx")
+
+print(df)
+
+###########        ETC        ############
+
+def get_ror(kt=0.5):
+    df = pyupbit.get_ohlcv(etc,interval=trade_hours60, count = hour_counts)
+    df['range'] = (df['high'] - df['low']) * kt
+    df['target'] = df['open'] + df['range'].shift(1)
+
+    fee = 0.0005
+    df['ror'] = np.where(df['high'] > df['target'],
+                         df['close'] / df['target'] - fee,
+                         1)
+
+    ror = df['ror'].cumprod()[-2]
+    return ror
+
+for kt in np.arange(0.1, 1.0, 0.1):
+    ror = get_ror(kt)
+    print("%.1f %f" % (kt, ror))
+
+
+k = 0.2
+
+df = pyupbit.get_ohlcv(etc, interval=trade_hours60, count = hour_counts)
+df['range'] = (df['high'] - df['low']) * k_etc
+df['target'] = df['open'] + df['range'].shift(1)
+
+fee = 0.0005
+
+df['ror_tempt'] = np.where(df['high'] > df['target'],
+                     df['close'] / df['target'] - fee,
+                     1)
+df['hpr_tempt'] = df['ror_tempt'].cumprod() # 누적수익률
+
+df['ror'] = 100 * (np.where(df['high'] > df['target'], # 수익률 // (조건문, 참일때 값, 거짓일때 값)
+                     df['close'] / df['target'] - fee,
+                     1) - 1)
+df['hpr'] = 100 * (df['ror_tempt'].cumprod() - 1) # 누적수익률
+
+df['loss'] = (df['hpr_tempt'].cummax() - df['hpr_tempt']) / df['hpr_tempt'].cummax() * 100 # (누적최대값과 현재 hpr / 누적 최대값 * 100)
+
+print("MDD(%): ", df['loss'].max(), etc)
+df.to_excel("loss.xlsx")
+
+print(df)
+
+###########        XRP        ############
+
+
+def get_ror(kt=0.5):
+    df = pyupbit.get_ohlcv(xrp,interval=trade_hours60, count = hour_counts)
+    df['range'] = (df['high'] - df['low']) * kt
+    df['target'] = df['open'] + df['range'].shift(1)
+
+    fee = 0.0005
+    df['ror'] = np.where(df['high'] > df['target'],
+                         df['close'] / df['target'] - fee,
+                         1)
+
+    ror = df['ror'].cumprod()[-2]
+    return ror
+
+for kt in np.arange(0.1, 1.0, 0.1):
+    ror = get_ror(kt)
+    print("%.1f %f" % (kt, ror))
+
+df = pyupbit.get_ohlcv(xrp, interval=trade_hours60, count = hour_counts)
+df['range'] = (df['high'] - df['low']) * k_xrp
+df['target'] = df['open'] + df['range'].shift(1)
+
+fee = 0.0005
+
+df['ror_tempt'] = np.where(df['high'] > df['target'],
+                     df['close'] / df['target'] - fee,
+                     1)
+df['hpr_tempt'] = df['ror_tempt'].cumprod() # 누적수익률
+
+df['ror'] = 100 * (np.where(df['high'] > df['target'], # 수익률 // (조건문, 참일때 값, 거짓일때 값)
+                     df['close'] / df['target'] - fee,
+                     1) - 1)
+df['hpr'] = 100 * (df['ror_tempt'].cumprod() - 1) # 누적수익률
+
+df['loss'] = (df['hpr_tempt'].cummax() - df['hpr_tempt']) / df['hpr_tempt'].cummax() * 100 # (누적최대값과 현재 hpr / 누적 최대값 * 100)
+
+print("MDD(%): ", df['loss'].max(), xrp)
+df.to_excel("loss.xlsx")
+
+print(df)
+
+###########        ADA        ############
+
+
+def get_ror(kt=0.5):
+    df = pyupbit.get_ohlcv(ada,interval=trade_hours60, count = hour_counts)
+    df['range'] = (df['high'] - df['low']) * kt
+    df['target'] = df['open'] + df['range'].shift(1)
+
+    fee = 0.0005
+    df['ror'] = np.where(df['high'] > df['target'],
+                         df['close'] / df['target'] - fee,
+                         1)
+
+    ror = df['ror'].cumprod()[-2]
+    return ror
+
+for kt in np.arange(0.1, 1.0, 0.1):
+    ror = get_ror(kt)
+    print("%.1f %f" % (kt, ror))
+
+df = pyupbit.get_ohlcv(ada, interval=trade_hours60, count = hour_counts)
+df['range'] = (df['high'] - df['low']) * k_ada
+df['target'] = df['open'] + df['range'].shift(1)
+
+fee = 0.0005
+
+df['ror_tempt'] = np.where(df['high'] > df['target'],
+                     df['close'] / df['target'] - fee,
+                     1)
+df['hpr_tempt'] = df['ror_tempt'].cumprod() # 누적수익률
+
+df['ror'] = 100 * (np.where(df['high'] > df['target'], # 수익률 // (조건문, 참일때 값, 거짓일때 값)
+                     df['close'] / df['target'] - fee,
+                     1) - 1)
+df['hpr'] = 100 * (df['ror_tempt'].cumprod() - 1) # 누적수익률
+
+df['loss'] = (df['hpr_tempt'].cummax() - df['hpr_tempt']) / df['hpr_tempt'].cummax() * 100 # (누적최대값과 현재 hpr / 누적 최대값 * 100)
+
+print("MDD(%): ", df['loss'].max(), ada)
+df.to_excel("loss.xlsx")
+
+print(df)
+
+###########        EOS        ############
+
+
+def get_ror(kt=0.5):
+    df = pyupbit.get_ohlcv(eos,interval=trade_hours60, count = hour_counts)
+    df['range'] = (df['high'] - df['low']) * kt
+    df['target'] = df['open'] + df['range'].shift(1)
+
+    fee = 0.0005
+    df['ror'] = np.where(df['high'] > df['target'],
+                         df['close'] / df['target'] - fee,
+                         1)
+
+    ror = df['ror'].cumprod()[-2]
+    return ror
+
+for kt in np.arange(0.1, 1.0, 0.1):
+    ror = get_ror(kt)
+    print("%.1f %f" % (kt, ror))
+
+df = pyupbit.get_ohlcv(eos, interval=trade_hours60, count = hour_counts)
+df['range'] = (df['high'] - df['low']) * k_eos
+df['target'] = df['open'] + df['range'].shift(1)
+
+fee = 0.0005
+
+df['ror_tempt'] = np.where(df['high'] > df['target'],
+                     df['close'] / df['target'] - fee,
+                     1)
+df['hpr_tempt'] = df['ror_tempt'].cumprod() # 누적수익률
+
+df['ror'] = 100 * (np.where(df['high'] > df['target'], # 수익률 // (조건문, 참일때 값, 거짓일때 값)
+                     df['close'] / df['target'] - fee,
+                     1) - 1)
+df['hpr'] = 100 * (df['ror_tempt'].cumprod() - 1) # 누적수익률
+
+df['loss'] = (df['hpr_tempt'].cummax() - df['hpr_tempt']) / df['hpr_tempt'].cummax() * 100 # (누적최대값과 현재 hpr / 누적 최대값 * 100)
+
+print("MDD(%): ", df['loss'].max(), eos)
+df.to_excel("loss.xlsx")
+
+print(df)
