@@ -5,6 +5,11 @@ import datetime
 access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
+k_doge = 0.1
+k_eth = 0.6
+k_etc = 0.5
+k_xrp = 0.2
+
 XRP_balance = "XRP"
 XRPcoin = "KRW-XRP"
 
@@ -57,6 +62,7 @@ upbit = pyupbit.Upbit(access, secret)
 
 print("autotrade start")
 
+
 # 자동매매 시작
 while True:
 
@@ -68,7 +74,7 @@ while True:
         end_time = start_time + datetime.timedelta(hours=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(XRPcoin, 0.4)
+            target_price = get_target_price(XRPcoin, k_xrp)
             ma20 = get_ma20(XRPcoin)
             current_price = get_current_price(XRPcoin)
             if target_price < current_price and ma20 < current_price:
@@ -95,7 +101,7 @@ while True:
         end_time = start_time + datetime.timedelta(hours=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(ETHcoin, 0.6)
+            target_price = get_target_price(ETHcoin, k_eth)
             ma20 = get_ma20(ETHcoin)
             current_price = get_current_price(ETHcoin)
             if target_price < current_price and ma20 < current_price:
@@ -122,7 +128,7 @@ while True:
         end_time = start_time + datetime.timedelta(hours=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(DOGEcoin, 0.5)
+            target_price = get_target_price(DOGEcoin, k_doge)
             ma20 = get_ma20(DOGEcoin)
             current_price = get_current_price(DOGEcoin)
             if target_price < current_price and ma20 < current_price:
@@ -149,7 +155,7 @@ while True:
         end_time = start_time + datetime.timedelta(hours=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price(ETCcoin, 0.2)
+            target_price = get_target_price(ETCcoin, k_etc)
             ma20 = get_ma20(ETCcoin)
             current_price = get_current_price(ETCcoin)
             if target_price < current_price and ma20 < current_price:
