@@ -1,23 +1,21 @@
 import time
 import pyupbit
 import datetime
-import numpy as np
-import requests
- 
+
+balance = 598391*0.9995/6
 
 access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
-n_balance = 598391*0.9995/6
 
-doge_val = n_balance
-eth_val = n_balance
-etc_val = n_balance
-xrp_val = n_balance
-ada_val = n_balance
-eos_val = n_balance
-xlm_val = n_balance
-hbar_val = n_balance
+doge_val = balance
+eth_val = balance
+etc_val = balance
+xrp_val = balance
+ada_val = balance
+eos_val = balance
+xlm_val = balance
+hbar_val = balance
 
 ## __KRW_coin__ ##
 
@@ -71,15 +69,6 @@ trade_minute40 = "minute240"
 
 
 ## function ##
-def post_message(token, channel, text):
-    response = requests.post("https://slack.com/api/chat.postMessage",
-        headers={"Authorization": "Bearer "+token},
-        data={"channel": channel,"text": text}
-    )
-    print(response)
- 
-myToken = "xoxb-2045394294016-2034210515825-qTlAnExyJ4LElnjoWVNjVS4r"
- 
 
 def get_target_price(ticker, k):
     """변동성 돌파 전략 매수 목표가 조회"""
@@ -131,17 +120,12 @@ def coin_autotrade(__krw_coin__,__k_coin__,__coin_name__,__min_val__,__money__):
                     if __money__ > 5000 and coin < __min_val__:
                         upbit.buy_market_order(__krw_coin__, __money__)
                         print("Buy :", __coin_name__ ," price :", __money__)
-                        post_message(myToken,"#coin","Buy :"+str(__coin_name__)+" price :"+str(round(__money__,-1)))
-                        time.sleep(3)
-                    
         else:
             coin = get_balance(__coin_name__)
             if coin > __min_val__:
                 upbit.sell_market_order(__krw_coin__, coin)
                 __money__ = coin * get_current_price(__krw_coin__)
                 print("Sell :", __coin_name__ ," price :", __money__)
-                post_message(myToken,"Sell :"+str(__coin_name__)+" price :"+str(round(__money__,-1)))
-
         time.sleep(1)
     except Exception as e:
         print(e)
