@@ -16,6 +16,7 @@ ada_val = balance
 eos_val = balance
 xlm_val = balance
 hbar_val = balance
+trx_val = balance
 
 ## __KRW_coin__ ##
 
@@ -27,6 +28,7 @@ krw_ada = "KRW-ADA"
 krw_eos = "KRW-EOS"
 krw_xlm = "KRW-XLM"
 krw_hbar = "KRW-HBAR"
+krw_trx = "KRW-TRX"
 
 ## __coin_name__ ##
 
@@ -38,6 +40,7 @@ ada = "ADA"
 eos = "EOS"
 xlm = "XLM"
 hbar = "HBAR"
+trx = "TRX"
 
 ## __k_coin__ ##
 
@@ -49,6 +52,7 @@ k_ada = 0.3  # o
 k_eos = 0.5  # o
 k_xlm = 0.1  # o
 k_hbar = 0.3 # o
+k_trx = 0.6  # o
 
 ## __min_val__ ##
 
@@ -60,6 +64,7 @@ ada_min = 2.16
 eos_min = 0.37
 xlm_min = 5.9
 hbar_min = 11.6
+trx_min = 32.46
 
 ## trade_time_set ##
 
@@ -159,3 +164,5 @@ while True:
     xlm_val = coin_autotrade(krw_xlm,k_xlm,xlm,xlm_min,xlm_val)
 
     hbar_val = coin_autotrade(krw_hbar,k_hbar,hbar,hbar_min,hbar_val)
+    
+    trx_val = coin_autotrade(krw_trx,k_trx,trx,trx_min,trx_val)
