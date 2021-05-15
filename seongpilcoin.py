@@ -2,7 +2,7 @@ import time
 import pyupbit
 import datetime
 
-balance = 802969/8
+balance = 902969/9
 
 access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
@@ -10,13 +10,14 @@ secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 doge_val = balance
 eth_val = balance
-etc_val = balance
+etc_val = 104677
 xrp_val = balance
 ada_val = balance
 eos_val = balance
 xlm_val = balance
 hbar_val = balance
 trx_val = balance
+bch_val = balance
 
 ## __KRW_coin__ ##
 
@@ -29,6 +30,7 @@ krw_eos = "KRW-EOS"
 krw_xlm = "KRW-XLM"
 krw_hbar = "KRW-HBAR"
 krw_trx = "KRW-TRX"
+krw_bch = "KRW-bch"
 
 ## __coin_name__ ##
 
@@ -41,6 +43,7 @@ eos = "EOS"
 xlm = "XLM"
 hbar = "HBAR"
 trx = "TRX"
+bch = "BCH"
 
 ## __k_coin__ ##
 
@@ -53,6 +56,7 @@ k_eos = 0.5  # o
 k_xlm = 0.1  # o
 k_hbar = 0.3 # o
 k_trx = 0.6  # o
+k_bch = 0.5 # o
 
 ## __min_val__ ##
 
@@ -65,6 +69,7 @@ eos_min = 0.37
 xlm_min = 5.9
 hbar_min = 11.6
 trx_min = 32.46
+bch_min = 0.00308
 
 ## trade_time_set ##
 
@@ -167,3 +172,5 @@ while True:
     hbar_val = coin_autotrade(krw_hbar,k_hbar,hbar,hbar_min,hbar_val)
     
     trx_val = coin_autotrade(krw_trx,k_trx,trx,trx_min,trx_val)
+    
+    bch_val = coin_autotrade(krw_bch,k_bch,bch,bch_min,bch_val)
