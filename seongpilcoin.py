@@ -2,7 +2,7 @@ import time
 import pyupbit
 import datetime
 
-balance = 598754*0.9995/6
+balance = 802969/8
 
 access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
@@ -123,7 +123,8 @@ def coin_autotrade(__krw_coin__,__k_coin__,__coin_name__,__min_val__,__money__):
                 coin = get_balance(__coin_name__)
                 if target_price <= current_price:
                     if __money__ > 5000 and coin < __min_val__:
-                        upbit.buy_market_order(__krw_coin__, __money__)
+                        upbit.buy_market_order(__krw_coin__, __money__*fee)
+                        __money__ = __money__ * fee
                         print("Buy :", __coin_name__ ," price :", __money__)
         else:
             coin = get_balance(__coin_name__)
