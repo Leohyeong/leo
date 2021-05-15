@@ -4,6 +4,8 @@ import datetime
 
 balance = 902969/9
 
+fee = 0.9995
+
 access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
