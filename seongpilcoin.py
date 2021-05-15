@@ -2,7 +2,7 @@ import time
 import pyupbit
 import datetime
 
-balance = 902969/9
+balance = 702309/7
 
 fee = 0.9995
 
@@ -12,7 +12,7 @@ secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 doge_val = balance
 eth_val = balance
-etc_val = 104677
+etc_val = balance
 xrp_val = balance
 ada_val = balance
 eos_val = balance
@@ -53,11 +53,11 @@ k_doge = 0.3 # o
 k_eth = 0.8  # o
 k_etc = 0.3  # o
 k_xrp = 0.5  # o
-k_ada = 0.3  # o
-k_eos = 0.5  # o
+k_ada = 0.5  # o
+k_eos = 0.3  # o
 k_xlm = 0.1  # o
-k_hbar = 0.3 # o
-k_trx = 0.6  # o
+k_hbar = 0.1 # o
+k_trx = 0.3  # o
 k_bch = 0.5 # o
 
 ## __min_val__ ##
