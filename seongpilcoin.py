@@ -126,13 +126,12 @@ def coin_autotrade(__krw_coin__,__k_coin__,__coin_name__,__min_val__,__money__):
             target_price = get_target_price(__krw_coin__, __k_coin__)
             ma20 = get_ma20(__krw_coin__)
             current_price = get_current_price(__krw_coin__)
-            if ma20 < target_price < current_price:
+            if target_price < current_price:
                 coin = get_balance(__coin_name__)
-                if target_price <= current_price:
-                    if __money__ > 5000 and coin < __min_val__:
-                        upbit.buy_market_order(__krw_coin__, __money__*fee)
-                        __money__ = __money__ * fee
-                        print("Buy :", __coin_name__ ," price :", __money__)
+                if __money__ > 5000 and coin < __min_val__:
+                    upbit.buy_market_order(__krw_coin__, __money__*fee)
+                    __money__ = __money__ * fee
+                    print("Buy :", __coin_name__ ," price :", __money__)
         else:
             coin = get_balance(__coin_name__)
             if coin > __min_val__:
