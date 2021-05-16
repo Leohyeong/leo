@@ -2,7 +2,7 @@ import time
 import pyupbit
 import datetime
 
-balance = 702309/7
+balance = 100280*1.0005
 
 fee = 0.9995
 
