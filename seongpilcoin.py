@@ -2,7 +2,7 @@ import time
 import pyupbit
 import datetime
 
-mybalance = 100280*1.0005
+mybalance = 100280
 
 fee = 0.9995
 
@@ -126,13 +126,13 @@ def coin_autotrade(__krw_coin__,__k_coin__,__coin_name__,__min_val__,__money__):
         if start_time < now < end_time - datetime.timedelta(seconds=30):
             target_price = get_target_price(__krw_coin__, __k_coin__)
 #             ma20 = get_ma20(__krw_coin__)
-            coin = get_balance(__coin_name__)
             current_price = get_current_price(__krw_coin__)
             if target_price < current_price:
                 if target_price <= current_price:
+                    coin = get_balance(__coin_name__)
                     if __money__ > 5000 and coin < __min_val__:
                         upbit.buy_market_order(__krw_coin__, __money__*fee)
-                        __money__ = __money__ * fee
+                        __money__ = int(round((__money__ * fee),-1))
                         # print("Buy :", __coin_name__ ," price :", str(__money__))
         else:
             coin = get_balance(__coin_name__)
