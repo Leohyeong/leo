@@ -2,7 +2,7 @@ import time
 import pyupbit
 import datetime
 
-balance = 100280*1.0005
+mybalance = 100280*1.0005
 
 fee = 0.9995
 
@@ -10,16 +10,16 @@ access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 
-doge_val = balance
-eth_val = balance
+doge_val = mybalance
+eth_val = mybalance
 etc_val = 94170
 xrp_val = 103352
 ada_val = 106155
 eos_val = 89901
 xlm_val = 102444
-hbar_val = balance
-trx_val = balance
-bch_val = balance
+hbar_val = mybalance
+trx_val = mybalance
+bch_val = mybalance
 
 ## __KRW_coin__ ##
 
@@ -90,11 +90,11 @@ def get_target_price(ticker, k):
     # 시가 + 변동폭
 
 
-def get_ma20(ticker):
-    """20시간 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
-    ma20 = df['close'].rolling(20).mean().iloc[-1]
-    return ma20
+# def get_ma20(ticker):
+#     """20시간 이동 평균선 조회"""
+#     df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+#     ma20 = df['close'].rolling(20).mean().iloc[-1]
+#     return ma20
 
 def get_start_time(ticker):
     """시작 시간 조회"""
@@ -112,6 +112,7 @@ def get_balance(ticker):
             else:
                 return 0
     return 0
+
 def get_current_price(ticker):
     """현재가 조회"""
     return pyupbit.get_orderbook(tickers=ticker)[0]["orderbook_units"][0]["ask_price"]
@@ -129,16 +130,16 @@ def coin_autotrade(__krw_coin__,__k_coin__,__coin_name__,__min_val__,__money__):
             current_price = get_current_price(__krw_coin__)
             if target_price < current_price:
                 if target_price <= current_price:
-                if __money__ > 5000 and coin < __min_val__:
-                    upbit.buy_market_order(__krw_coin__, __money__*fee)
-                    __money__ = __money__ * fee
-                    print("Buy :", __coin_name__ ," price :", __money__)
+                    if __money__ > 5000 and coin < __min_val__:
+                        upbit.buy_market_order(__krw_coin__, __money__*fee)
+                        __money__ = __money__ * fee
+                        # print("Buy :", __coin_name__ ," price :", str(__money__))
         else:
             coin = get_balance(__coin_name__)
             if coin > __min_val__:
                 upbit.sell_market_order(__krw_coin__, coin)
                 __money__ = coin * get_current_price(__krw_coin__)
-                print("Sell :", __coin_name__ ," price :", __money__)
+                # print("Sell :", __coin_name__ ," price :", str(__money__))
         time.sleep(1)
     except Exception as e:
         print(e)
