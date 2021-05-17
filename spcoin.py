@@ -18,6 +18,7 @@ ada_val = 101956
 eos_val = 83619
 xlm_val = 104108
 hbar_val = 22977+78002
+trx_val = 96324
 bch_val = mybalance
 
 ## __KRW_coin__ ##
