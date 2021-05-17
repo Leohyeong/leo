@@ -18,7 +18,6 @@ ada_val = 101956
 eos_val = 83619
 xlm_val = 104108
 hbar_val = 22977+78002
-trx_val = 96324
 bch_val = mybalance
 
 ## __KRW_coin__ ##
@@ -173,7 +172,5 @@ while True:
     xlm_val = coin_autotrade(krw_xlm,k_xlm,xlm,xlm_min,xlm_val)
 
     hbar_val = coin_autotrade(krw_hbar,k_hbar,hbar,hbar_min,hbar_val)
-    
-    trx_val = coin_autotrade(krw_trx,k_trx,trx,trx_min,trx_val)
     
     bch_val = coin_autotrade(krw_bch,k_bch,bch,bch_min,bch_val)
