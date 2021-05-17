@@ -10,15 +10,15 @@ access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 
-doge_val = mybalance
+doge_val = 96736
 eth_val = mybalance
-etc_val = 94170
-xrp_val = 103352
-ada_val = 106155
-eos_val = 89901
-xlm_val = 102444
-hbar_val = mybalance
-trx_val = mybalance
+etc_val = 94123
+xrp_val = 103300
+ada_val = 101956
+eos_val = 83619
+xlm_val = 104108
+hbar_val = 22977+78002
+trx_val = 96324
 bch_val = mybalance
 
 ## __KRW_coin__ ##
@@ -123,7 +123,7 @@ def coin_autotrade(__krw_coin__,__k_coin__,__coin_name__,__min_val__,__money__):
         now = datetime.datetime.now()
         start_time = get_start_time(__krw_coin__)
         end_time = start_time + datetime.timedelta(days=1)
-        if start_time < now < end_time - datetime.timedelta(seconds=30):
+        if start_time < now < end_time - datetime.timedelta(seconds=59):
             target_price = get_target_price(__krw_coin__, __k_coin__)
 #             ma20 = get_ma20(__krw_coin__)
             current_price = get_current_price(__krw_coin__)
