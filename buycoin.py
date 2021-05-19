@@ -80,7 +80,7 @@ def coin_autotrade(__krw_coin__,__coin_name__,__min_val__,__money__):
                 __money__ = int(round((__money__ * fee),-1))
                 print("Buy :", __coin_name__ ," price :", str(__money__))
                 bot.sendMessage(chat_id=chat_id, text="Buy : "+__coin_name__+" price : "+str(__money__))
-        elif ma20 > current_price:
+        else:
             coin = get_balance(__coin_name__)
             if coin > __min_val__:
                 upbit.sell_market_order(__krw_coin__, coin)
