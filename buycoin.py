@@ -13,7 +13,7 @@ access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 
-# doge_val = mybalance
+doge_val = mybalance
 etc_val = mybalance
 xrp_val = mybalance
 
