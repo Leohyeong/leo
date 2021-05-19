@@ -16,13 +16,12 @@ secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 doge_val = 96736
 eth_val = mybalance
-etc_val = 94123
-xrp_val = 103300
+etc_val = 94170
+xrp_val = 101404
 ada_val = 101956
-eos_val = 83619
+eos_val = 79823-41741
 xlm_val = 103621
-hbar_val = 22977+78002
-trx_val = 96324
+hbar_val = 96775
 bch_val = mybalance
 
 ## __KRW_coin__ ##
