@@ -5,7 +5,7 @@ import telegram
 bot = telegram.Bot(token='1825271568:AAHLOTqYV8ZZ8IN0I1N-FpR68g0PGThQyVs')
 chat_id = 1893587930
 
-mybalance = 729083/3
+mybalance = 763700/3
 
 fee = 0.9995
 
@@ -13,9 +13,9 @@ access = "OFCL17jSpSEAj3r1gnvHAGPMSix5MShrAcsz9Hi4"
 secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 
-doge_val = mybalance
+# doge_val = mybalance
 etc_val = mybalance
-xrp_val = 240065
+xrp_val = mybalance
 
 ## __KRW_coin__ ##
 
@@ -46,25 +46,11 @@ trade_minute40 = "minute240"
 
 ## function ##
 
-def get_target_price(ticker, k):
-    """변동성 돌파 전략 매수 목표가 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="minute1", count=2)
-    target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
-    return target_price
-    # 시가 + 변동폭
-
-
 def get_ma20(ticker):
     """20시간 이동 평균선 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="minute1", count=20)
     ma20 = df['close'].rolling(20).mean().iloc[-1]
     return ma20
-
-def get_start_time(ticker):
-    """시작 시간 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="minute1", count=1)
-    start_time = df.index[0]
-    return start_time
 
 def get_balance(ticker):
     """잔고 조회"""
@@ -86,7 +72,7 @@ def coin_autotrade(__krw_coin__,__coin_name__,__min_val__,__money__):
     try:
         ma20 = get_ma20(__krw_coin__)
         current_price = get_current_price(__krw_coin__)
-        
+
         if ma20 < current_price:
             coin = get_balance(__coin_name__)
             if __money__ > 5000 and coin < __min_val__:
@@ -94,7 +80,7 @@ def coin_autotrade(__krw_coin__,__coin_name__,__min_val__,__money__):
                 __money__ = int(round((__money__ * fee),-1))
                 print("Buy :", __coin_name__ ," price :", str(__money__))
                 bot.sendMessage(chat_id=chat_id, text="Buy : "+__coin_name__+" price : "+str(__money__))
-        else:
+        elif ma20 > current_price:
             coin = get_balance(__coin_name__)
             if coin > __min_val__:
                 upbit.sell_market_order(__krw_coin__, coin)
