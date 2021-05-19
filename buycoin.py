@@ -15,7 +15,7 @@ secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 doge_val = mybalance
 etc_val = mybalance
-xrp_val = mybalance
+xrp_val = 240065
 
 ## __KRW_coin__ ##
 
