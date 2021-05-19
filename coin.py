@@ -5,7 +5,7 @@ import telegram
 bot = telegram.Bot(token='1825271568:AAHLOTqYV8ZZ8IN0I1N-FpR68g0PGThQyVs')
 chat_id = 1893587930
 
-mybalance = 727990/2
+mybalance = 326588
 
 fee = 0.9995
 
@@ -22,6 +22,7 @@ xrp_val = mybalance
 krw_doge = "KRW-DOGE"
 krw_etc = "KRW-ETC"
 krw_xrp = "KRW-XRP"
+krw_btc = "KRW-BTC"
 
 
 ## __coin_name__ ##
@@ -29,12 +30,14 @@ krw_xrp = "KRW-XRP"
 doge = "DOGE"
 etc = "ETC"
 xrp = "XRP"
+btc = "BTC"
 
 ## __min_val__ ##
 
 doge_min = 7.7
 etc_min = 0.043
 xrp_min = 2.92
+btc_min = 0.000103
 
 
 ## trade_time_set ##
@@ -107,7 +110,7 @@ print("Auto Trade Start!!!")
 while True:
 
     doge_val = coin_autotrade(krw_doge,doge,doge_min,doge_val)
-
-    etc_val = coin_autotrade(krw_etc,etc,etc_min,etc_val)
+    btc_val = coin_autotrade(krw_btc,btc,btc_min,btc_val)
+#     etc_val = coin_autotrade(krw_etc,etc,etc_min,etc_val)
 
 #     xrp_val = coin_autotrade(krw_xrp,xrp,xrp_min,xrp_val)
