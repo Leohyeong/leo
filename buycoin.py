@@ -106,8 +106,8 @@ print("Auto Trade Start!!!")
 
 while True:
 
-#     doge_val = coin_autotrade(krw_doge,doge,doge_min,doge_val)
+    doge_val = coin_autotrade(krw_doge,doge,doge_min,doge_val)
 
     etc_val = coin_autotrade(krw_etc,etc,etc_min,etc_val)
 
-    xrp_val = coin_autotrade(krw_xrp,xrp,xrp_min,xrp_val)
+#     xrp_val = coin_autotrade(krw_xrp,xrp,xrp_min,xrp_val)
