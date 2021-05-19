@@ -5,7 +5,7 @@ import telegram
 bot = telegram.Bot(token='1825271568:AAHLOTqYV8ZZ8IN0I1N-FpR68g0PGThQyVs')
 chat_id = 1893587930
 
-mybalance = 742074/3
+mybalance = 732872/3
 
 fee = 0.9995
 
@@ -93,7 +93,7 @@ def coin_autotrade(__krw_coin__,__coin_name__,__min_val__,__money__):
                 __money__ = coin * get_current_price(__krw_coin__)
                 print("Sell :", __coin_name__ ," price :", str(__money__))
                 bot.sendMessage(chat_id=chat_id, text="Sell : "+__coin_name__+" price : "+str(__money__))
-        time.sleep(0.5)
+        time.sleep(0.1)
     except Exception as e:
         print(e)
         time.sleep(1)
