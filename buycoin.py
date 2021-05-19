@@ -48,7 +48,7 @@ trade_minute40 = "minute240"
 
 def get_target_price(ticker, k):
     """변동성 돌파 전략 매수 목표가 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
+    df = pyupbit.get_ohlcv(ticker, interval="minute1", count=2)
     target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
     return target_price
     # 시가 + 변동폭
@@ -56,13 +56,13 @@ def get_target_price(ticker, k):
 
 def get_ma20(ticker):
     """20시간 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+    df = pyupbit.get_ohlcv(ticker, interval="minute1", count=20)
     ma20 = df['close'].rolling(20).mean().iloc[-1]
     return ma20
 
 def get_start_time(ticker):
     """시작 시간 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=1)
+    df = pyupbit.get_ohlcv(ticker, interval="minute1", count=1)
     start_time = df.index[0]
     return start_time
 
@@ -86,6 +86,7 @@ def coin_autotrade(__krw_coin__,__coin_name__,__min_val__,__money__):
     try:
         ma20 = get_ma20(__krw_coin__)
         current_price = get_current_price(__krw_coin__)
+        
         if ma20 < current_price:
             coin = get_balance(__coin_name__)
             if __money__ > 5000 and coin < __min_val__:
