@@ -5,7 +5,7 @@ import telegram
 bot = telegram.Bot(token='1825271568:AAHLOTqYV8ZZ8IN0I1N-FpR68g0PGThQyVs')
 chat_id = 1893587930
 
-mybalance = 324454
+mybalance = 742074/3
 
 fee = 0.9995
 
@@ -14,7 +14,7 @@ secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 
 doge_val = mybalance
-btc_val = mybalance
+etc_val = mybalance
 eth_val = mybalance
 
 
@@ -114,6 +114,6 @@ while True:
 
     doge_val = coin_autotrade(krw_doge,doge,doge_min,doge_val)
     eth_val = coin_autotrade(krw_eth,eth,eth_min,eth_val)
-#     etc_val = coin_autotrade(krw_etc,etc,etc_min,etc_val)
+    etc_val = coin_autotrade(krw_etc,etc,etc_min,etc_val)
 
 #     xrp_val = coin_autotrade(krw_xrp,xrp,xrp_min,xrp_val)
