@@ -15,14 +15,14 @@ secret = "04fFGc0jmnpOupg3T2DfejiFGuojYiMFVwIPGiXU"
 
 doge_val = mybalance
 btc_val = mybalance
-xrp_val = mybalance
+eth_val = mybalance
 
 
 ## __KRW_coin__ ##
 
 krw_doge = "KRW-DOGE"
 krw_etc = "KRW-ETC"
-krw_xrp = "KRW-XRP"
+krw_eth = "KRW-ETH"
 krw_btc = "KRW-BTC"
 
 
@@ -32,6 +32,7 @@ doge = "DOGE"
 etc = "ETC"
 xrp = "XRP"
 btc = "BTC"
+eth = "ETH"
 
 ## __min_val__ ##
 
@@ -39,6 +40,7 @@ doge_min = 7.7
 etc_min = 0.043
 xrp_min = 2.92
 btc_min = 0.000103
+eth_min = 0.0014
 
 
 ## trade_time_set ##
@@ -90,10 +92,10 @@ def coin_autotrade(__krw_coin__,__coin_name__,__min_val__,__money__):
             __money__ = coin * get_current_price(__krw_coin__)
             print("Sell :", __coin_name__ ," price :", str(__money__))
             bot.sendMessage(chat_id=chat_id, text="Sell : "+__coin_name__+" price : "+str(__money__))
-        time.sleep(0.1)
+        time.sleep(0.5)
     except Exception as e:
         print(e)
-        time.sleep(0.1)
+        time.sleep(1)
     
     return __money__
 
@@ -110,7 +112,7 @@ print("Auto Trade Start!!!")
 while True:
 
     doge_val = coin_autotrade(krw_doge,doge,doge_min,doge_val)
-    btc_val = coin_autotrade(krw_btc,btc,btc_min,btc_val)
+    eth_val = coin_autotrade(krw_eth,eth,eth_min,eth_val)
 #     etc_val = coin_autotrade(krw_etc,etc,etc_min,etc_val)
 
 #     xrp_val = coin_autotrade(krw_xrp,xrp,xrp_min,xrp_val)
