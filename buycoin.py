@@ -5,7 +5,7 @@ import telegram
 bot = telegram.Bot(token='1825271568:AAHLOTqYV8ZZ8IN0I1N-FpR68g0PGThQyVs')
 chat_id = 1893587930
 
-mybalance = 763700/3
+mybalance = 727990/2
 
 fee = 0.9995
 
@@ -106,7 +106,7 @@ print("Auto Trade Start!!!")
 
 while True:
 
-    doge_val = coin_autotrade(krw_doge,doge,doge_min,doge_val)
+#     doge_val = coin_autotrade(krw_doge,doge,doge_min,doge_val)
 
     etc_val = coin_autotrade(krw_etc,etc,etc_min,etc_val)
 
