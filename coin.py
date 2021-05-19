@@ -87,7 +87,7 @@ def coin_autotrade(__krw_coin__,__coin_name__,__min_val__,__money__):
                 __money__ = coin * get_current_price(__krw_coin__)
                 print("Sell :", __coin_name__ ," price :", str(__money__))
                 bot.sendMessage(chat_id=chat_id, text="Sell : "+__coin_name__+" price : "+str(__money__))
-        time.sleep(1)
+        time.sleep(0.5)
     except Exception as e:
         print(e)
         time.sleep(1)
