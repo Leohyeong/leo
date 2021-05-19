@@ -5,7 +5,7 @@ import telegram
 bot = telegram.Bot(token='1825271568:AAHLOTqYV8ZZ8IN0I1N-FpR68g0PGThQyVs')
 chat_id = 1893587930
 
-mybalance = 326588
+mybalance = 324454
 
 fee = 0.9995
 
