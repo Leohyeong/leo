@@ -32,7 +32,7 @@ def get_ma20(ticker):
 def ma_grad(ticker):
     """이동평균선 기울기"""
     df = pyupbit.get_ohlcv(ticker, interval="minute1", count=20)
-    ma = df['close'].rolling(20).mean().iloc[-1]-df['close'].rolling(20).mean().iloc[-2]
+    ma = df['close'].rolling(20).mean().iloc[-1] - df['close'].rolling(19).mean().iloc[-2]
     return ma
 
 def get_balance(ticker):
