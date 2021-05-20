@@ -50,7 +50,7 @@ def coin_autotrade(__krw_coin__,__coin_name__,__min_val__,__money__):
         ma20 = get_ma20(__krw_coin__)
         current_price = get_current_price(__krw_coin__)
         coin = get_balance(__coin_name__)
-        if (ma20 <= current_price <= ma20+2000):
+        if (ma20 <= current_price <= ma20+3000):
             if (__money__ > 5000) & (coin < __min_val__):
                 upbit.buy_market_order(__krw_coin__, __money__*fee)
                 __money__ = float(round((__money__ * fee),-1))
