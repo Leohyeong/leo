@@ -80,7 +80,7 @@ while True:
             current_price = get_current_price(krw_etc)
             etc_coin = get_balance(etc)
             if (mybalance > 5000) & (etc_coin < etc_min):
-                if target_price <= current_price:
+                if target_price < current_price <= current_price + 1000:
                         upbit.buy_market_order(krw_etc, mybalance*fee)
                         mybalance = float(round((mybalance * fee),-1))
                         print("Buy :", etc ," price :", str(mybalance))
