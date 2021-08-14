@@ -22,6 +22,7 @@ def info_time(start):
 """"모든 코인 & 수수료"""
 tickers = pyupbit.get_tickers(fiat="KRW")
 tickers_length = len(tickers)
+# tickers_length = 2
 fee = 0.0005
 
 ## Login ##
@@ -52,10 +53,12 @@ def divideBalance():
     for i in range(len(tickers)):
         if get_balance(tickers[i][tickers[i].find('-')+1:]) > 0:
             num_div -= 1
-    balance = float(math.floor((upbit.get_balance('KRW')*(1-fee))/num_div))
-    return balance
+    balan = float(math.floor((upbit.get_balance('KRW')*(1-fee))/num_div))
+    return balan
 
-balance = divideBalance()
+# balance = divideBalance()
+
+balance = 20000*(1+fee)
 
 ## Coin data update ##
 """데이터 업데이트"""
@@ -63,27 +66,26 @@ def get_current_price(ticker):
     """현재가 조회"""
     return pyupbit.get_orderbook(tickers=ticker)[0]["orderbook_units"][0]["ask_price"]
 
-def coin_data(balance):
+def coin_data(bal):
     
-    df = pd.DataFrame()
+    cdf_in = pd.DataFrame()
 
     for i in range(tickers_length):
         new_data = pd.DataFrame(
             {
             'coin': [tickers[i]],
-            'balance': [balance],
+            'balance': [bal],
             'name' : [tickers[i][tickers[i].find('-')+1:]],
             'min_num' : [5000/get_current_price(tickers[i])]
             }
         )
         time.sleep(0.1)
-        df = df.append(new_data)
-        cdf1 = df.copy()
-    print("* Coin data update")
+        cdf_in = cdf_in.append(new_data)
+        cdf1 = cdf_in.copy()
     return cdf1
 
 cdf = coin_data(balance)
-
+print(cdf)
 ## k data update ##
 """k 값 업데이트"""
 def updateBestk(ticker):
@@ -118,9 +120,7 @@ def updateBestk(ticker):
     return best_k
 
 def assignk():
-    start_k_time = datetime.datetime.now()
-
-    kdf = pd.DataFrame()
+    kdf_in = pd.DataFrame()
 
     for i in range(tickers_length): # len(tickers)
         new_kdf = pd.DataFrame(
@@ -128,22 +128,21 @@ def assignk():
             'k' :updateBestk(tickers[i])
             }
         )
-        kdf = kdf.append(new_kdf)
+        kdf_in = kdf_in.append(new_kdf)
 
     print("* K data update")
-    info_time(start_k_time)
-    kdf1 = kdf.copy()
+    kdf1 = kdf_in.copy()
     return kdf1
 
 kdf = assignk()
 
 ## Function ##
 
-def get_target_price(ticker, k):
+def get_target_price(ticker, k_val):
     """변동성 돌파 전략 매수 목표가 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
     time.sleep(0.1)
-    target_price = df.loc[0,'close'] + (df.loc[0,'high'] - df.loc[0,'low']) * k
+    target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k_val
     return target_price
 
 def get_start_time(ticker):
@@ -153,10 +152,10 @@ def get_start_time(ticker):
     start_time = df.index[0]
     return start_time
 
-def autotrade_buy(ticker,k,name,min_num,balance):
+def autotrade_buy(ticker,k_buy,name,min_num,balance):
     try:
 
-        target_price = get_target_price(ticker, k)
+        target_price = get_target_price(ticker, k_buy)
         current_price = get_current_price(ticker)
         num = get_balance(name)
 
@@ -179,7 +178,7 @@ def autotrade_buy(ticker,k,name,min_num,balance):
 
     return balance
 
-def autotrade_sell(ticker,name,min_num,balance):
+def autotrade_sell(ticker,name,min_num):
     try:
         num = get_balance(name)
         if num > min_num:
@@ -213,7 +212,7 @@ while True:
             time.sleep(0.1)
             i = 0
             for i in range(tickers_length): # len(tickers)
-                cdf.loc[i,'balance'] = autotrade_buy(tickers[i],kdf.loc[i,'k'],cdf.loc[i,'name'],cdf.loc[i,'min_num'],cdf.loc[i,'balance'])
+                cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                 time.sleep(0.1)
             k_count = 1
             
@@ -221,7 +220,7 @@ while True:
         else:
             i = 0
             for i in range(tickers_length):
-                cdf.loc[i,'balance'] = autotrade_sell(tickers[i],cdf.loc[i,'name'],cdf.loc[i,'min_num'],cdf.loc[i,'balance'])
+                cdf.iloc[i]['balance'] = autotrade_sell(tickers[i],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
                 time.sleep(0.1)
             if k_count == 1:
                 kdf = assignk()
