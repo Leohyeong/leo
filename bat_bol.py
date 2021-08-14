@@ -92,6 +92,7 @@ cdf = coin_data(balance) # 데이터 업데이트 함수 실행
 def get_ma20(ticker):
     """20시간 이동 평균선 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+    time.sleep(0.1)
     ma20 = df['close'].rolling(20).mean().iloc[-1]
     bol_lower = ma20 - 2*df['close'].rolling(20).std().iloc[-1]
     return bol_lower
@@ -172,8 +173,10 @@ def autotrade_buy(ticker,k_buy,name,min_num,balance):
         target_price = get_target_price(ticker, k_buy)
         current_price = get_current_price(ticker)
         num = get_balance(name)
+        ma20 = get_ma20(ticker)
+        open = get_open_price(ticker)
 
-        if (target_price < current_price < target_price * 1.01) & (get_ma20(ticker) > get_open_price(ticker)): ## 목표 단가에 매수
+        if (target_price < current_price < target_price * 1.01) & (ma20 > open): ## 목표 단가에 매수
             if (balance > 5000) & (num < min_num):
                 upbit.buy_market_order(ticker, balance * (1-fee))
                 balance = int(round(balance*(1-fee),-1))
