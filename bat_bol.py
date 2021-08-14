@@ -22,16 +22,13 @@ def info_time(start):
 """"모든 코인 & 수수료"""
 tickers = pyupbit.get_tickers(fiat="KRW")
 tickers_length = len(tickers)
-# tickers_length = 2
 fee = 0.0005
 
 ## Login ##
 """로그인"""
 access = "xYEholhmUOxsVOLoAh6NdxE0HQT2meKq4nxBUaXB"
 secret = "Kny70chrbB0d8x9x1hdmNgclVqepcUuxo4YZDoco"
-
 upbit = pyupbit.Upbit(access, secret)
-
 print("* Login complete")
 
 ## Divide balance ##
@@ -49,45 +46,56 @@ def get_balance(ticker):
 
 def divideBalance():
     num_div = len(tickers)
-
     for i in range(len(tickers)):
         if get_balance(tickers[i][tickers[i].find('-')+1:]) > 0:
             num_div -= 1
     balan = float(math.floor((upbit.get_balance('KRW')*(1-fee))/num_div))
     return balan
 
-# balance = divideBalance()
-
-balance = 20000*(1+fee)
+balance = divideBalance() # 잔고 배분 함수 실행
 
 ## Coin data update ##
 """데이터 업데이트"""
 def get_current_price(ticker):
     """현재가 조회"""
+    time.sleep(0.1)
     return pyupbit.get_orderbook(tickers=ticker)[0]["orderbook_units"][0]["ask_price"]
 
 def coin_data(bal):
     
     cdf_in = pd.DataFrame()
-
+    
     for i in range(tickers_length):
+        num = get_balance(tickers[i][tickers[i].find('-')+1:])
+        if  num > 0:
+            bal_in = 0
+        else:
+            bal_in = bal
         new_data = pd.DataFrame(
             {
             'coin': [tickers[i]],
-            'balance': [bal],
+            'balance': [bal_in],
             'name' : [tickers[i][tickers[i].find('-')+1:]],
             'min_num' : [5000/get_current_price(tickers[i])]
             }
         )
-        time.sleep(0.1)
         cdf_in = cdf_in.append(new_data)
         cdf1 = cdf_in.copy()
+
+    print("* Coin data update")
     return cdf1
 
-cdf = coin_data(balance)
-print(cdf)
+cdf = coin_data(balance) # 데이터 업데이트 함수 실행
+
 ## k data update ##
 """k 값 업데이트"""
+def get_ma20(ticker):
+    """20시간 이동 평균선 조회"""
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+    ma20 = df['close'].rolling(20).mean().iloc[-1]
+    bol_lower = ma20 - 2*df['close'].rolling(20).std().iloc[-1]
+    return bol_lower
+
 def updateBestk(ticker):
 
     def get_ror(ticker,k=0.5):
@@ -96,7 +104,7 @@ def updateBestk(ticker):
             df['range'] = (df['high'] - df['low']) * k
             df['target'] = df['open'] + df['range'].shift(1)
 
-            df['ror'] = np.where(df['high'] > df['target'],
+            df['ror'] = np.where(((df['high'] > df['target']) & (get_ma20(ticker) > df['open'])),
                                 df['close'] / df['target'] - fee,
                                 1)
 
@@ -134,7 +142,7 @@ def assignk():
     kdf1 = kdf_in.copy()
     return kdf1
 
-kdf = assignk()
+kdf = assignk() # k 업데이트 함수 실행
 
 ## Function ##
 
@@ -144,6 +152,12 @@ def get_target_price(ticker, k_val):
     time.sleep(0.1)
     target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k_val
     return target_price
+
+def get_open_price(ticker):
+    df = pyupbit.get_ohlcv(ticker,interval="day",count=1)
+    time.sleep(0.1)
+    open_price = df.iloc[0]['open']
+    return open_price
 
 def get_start_time(ticker):
     """시작 시간 조회"""
@@ -159,8 +173,7 @@ def autotrade_buy(ticker,k_buy,name,min_num,balance):
         current_price = get_current_price(ticker)
         num = get_balance(name)
 
-        if target_price < current_price < target_price * 1.01: ## 목표 단가에 매수
-            # num = get_balance(name)
+        if (target_price < current_price < target_price * 1.01) & (get_ma20(ticker) > get_open_price(ticker)): ## 목표 단가에 매수
             if (balance > 5000) & (num < min_num):
                 upbit.buy_market_order(ticker, balance * (1-fee))
                 balance = int(round(balance*(1-fee),-1))
@@ -211,7 +224,7 @@ while True:
         if start_time < now < end_time - datetime.timedelta(minutes=10):
             time.sleep(0.1)
             i = 0
-            for i in range(tickers_length): # len(tickers)
+            for i in range(tickers_length):
                 cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                 time.sleep(0.1)
             k_count = 1
