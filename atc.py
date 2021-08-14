@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 
 
-def info_time():
+def info_time(start):
     print("\nstart time : " + start.strftime('%H:%M:%S'))
 
     end = datetime.datetime.now()
@@ -40,7 +40,8 @@ print("* Login complete")
 
 fee = 0.0005
 
-div = float(math.floor(upbit.get_balance('KRW')*(1-fee)/len(tickers)))
+# div = float(math.floor(upbit.get_balance('KRW')*(1-fee)/len(tickers)))
+div = float(math.floor(742000*(1-fee)/len(tickers)))
 
 ## Coin data update ##
 
@@ -74,61 +75,73 @@ print("* Coin data update")
 
 ## k data update ##
 
-def best_k(ticker):
+def k_val(ticker):
+
     def get_ror(ticker,k=0.5):
-        df = pyupbit.get_ohlcv(ticker,interval="day",count=200)
-        time.sleep(0.2)
-        df['range'] = (df['high'] - df['low']) * k
-        df['target'] = df['open'] + df['range'].shift(1)
+            df = pyupbit.get_ohlcv(ticker,interval="day",count=200)
+            time.sleep(0.1)
+            df['range'] = (df['high'] - df['low']) * k
+            df['target'] = df['open'] + df['range'].shift(1)
 
-        fee = 0.0005
-        df['ror'] = np.where(df['high'] > df['target'],
-                            df['close'] / df['target'] - fee,
-                            1)
+            fee = 0.0005
+            df['ror'] = np.where(df['high'] > df['target'],
+                                df['close'] / df['target'] - fee,
+                                1)
 
-        ror = df['ror'].cumprod()[-2]
-        return ror
+            ror = df['ror'].cumprod()[-2]
+            return ror
 
-    k_tmp = []
-
-    for i in range(9):
-        k_tmp.append(0)
-
+    kdf_val = pd.DataFrame()
+    
     for k in np.arange(0.1, 1.0, 0.1):
         ror = get_ror(ticker,k)
-        a = int(k*10-1)
-        k_tmp[a] = ror
+        new_kdf_val = pd.DataFrame(
+            {
+            'k': [k],
+            'ror': [ror]
+            }
+        )
+        kdf_val = kdf_val.append(new_kdf_val)
 
-    best_k = round((k_tmp.index(max(k_tmp))+1)*0.1,2)
+    # kdf.to_excel(ticker[ticker.find('-')+1:]+"_"+str(datetime.now().strftime('%Y-%m-%d'))+"_k_origin"+'.xlsx')
+    best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror'])]['k']
+    # best_k_float = float(best_k)
+    # print(ticker ," k value : ", best_k_float)
+    # info_time(start_time)
 
     return best_k
 
-k = []
+start_k_time = datetime.datetime.now()
 
-start = datetime.datetime.now()
+kdf = pd.DataFrame()
 
-for i in range(0,len(tickers)):
-    new_k = best_k(tickers[i])
-    k.append(new_k)
-    time.sleep(0.1)
+for i in range(len(tickers)):
+    # print("No. " + str((i+1)))
+    new_kdf = pd.DataFrame(
+        {
+        'k' :k_val(tickers[i])
+        }
+    )
+    kdf = kdf.append(new_kdf)
+    # df.to_excel(tickers[i][tickers[i].find('-')+1:]+"_"+str(datetime.now().strftime('%Y-%m-%d'))+'.xlsx')
 
 print("* K data update")
-
-k1 = k.copy()
+info_time(start_k_time)
+k = kdf.copy()
 
 ## Function ##
 
 def get_target_price(ticker, k):
     """변동성 돌파 전략 매수 목표가 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
-    time.sleep(0.2)
+    time.sleep(0.1)
     target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
     return target_price
 
 def get_start_time(ticker):
     """시작 시간 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=1)
-    time.sleep(0.2)
+    time.sleep(0.1)
     start_time = df.index[0]
     return start_time
 
@@ -148,13 +161,19 @@ def autotrade_buy(ticker,k,name,min_num,balance):
         
         target_price = get_target_price(ticker, k)
         current_price = get_current_price(ticker)
-
-        if target_price < current_price < target_price * 1.01:
-            num = get_balance(name)
+        num = get_balance(name)
+        
+        if target_price < current_price < target_price * 1.01: ## 목표 단가에 매수
+            # num = get_balance(name)
             if (balance > 5000) & (num < min_num):
                 upbit.buy_market_order(ticker, balance * (1-fee))
                 balance = int(round(balance*(1-fee),-1))
                 print("Buy :", name ," price :" , balance)
+            
+        elif (num > min_num) & (target_price * 0.95 > current_price): ## 5퍼 하락시 매도
+                upbit.sell_market_order(ticker, num)
+                balance = num * get_current_price(ticker)
+                print("Sell :", name ," price :", balance)
 
         time.sleep(0.1)
 
@@ -170,7 +189,7 @@ def autotrade_sell(ticker,name,min_num,balance):
         if num > min_num:
             upbit.sell_market_order(ticker, num)
             balance = num * get_current_price(ticker)
-            print("Buy :", name ," price :", balance)
+            print("Sell :", name ," price :", balance)
 
         time.sleep(0.1)
 
@@ -185,6 +204,7 @@ def autotrade_sell(ticker,name,min_num,balance):
 print("* Auto trade start")
 
 i = 0
+count = 1
 
 while True:
     try:
@@ -193,18 +213,32 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)
 
-        if start_time < now < end_time - datetime.timedelta(minutes=5):
+        if start_time < now < end_time - datetime.timedelta(minutes=10):
             
             start = datetime.datetime.now()
             for i in range(len(tickers)):
-                cdf1.iloc[i]['balance'] = autotrade_buy(cdf1.iloc[i]['coin'],k1.iloc[i]['k'],cdf1.iloc[i]['name'],cdf1.iloc[i]['min_num'],cdf1.iloc[i]['balance'])
+                cdf1.iloc[i]['balance'] = autotrade_buy(cdf1.iloc[i]['coin'],k.iloc[i]['k'],cdf1.iloc[i]['name'],cdf1.iloc[i]['min_num'],cdf1.iloc[i]['balance'])
                 i += 1
+            count = 1
 
         else:
-            start = datetime.datetime.now()
             for i in range(len(tickers)):
                 cdf1.iloc[i]['balance'] = autotrade_sell(cdf1.iloc[i]['coin'],cdf1.iloc[i]['name'],cdf1.iloc[i]['min_num'],cdf1.iloc[i]['balance'])
-                i=i+1
+                i += 1
+            
+            if count == 1:
+                kdf = pd.DataFrame()
+                for i in range(len(tickers)):
+                    new_kdf = pd.DataFrame(
+                        {
+                        'k' :k_val(tickers[i])
+                        }
+                    )
+                    kdf = kdf.append(new_kdf)
+                print("* K data update")
+                info_time(start_k_time)
+                k = kdf.copy()
+                count = 0                
 
         time.sleep(0.2)
 
