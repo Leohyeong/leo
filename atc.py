@@ -218,13 +218,13 @@ while True:
             start = datetime.datetime.now()
             for i in range(len(tickers)):
                 cdf1.iloc[i]['balance'] = autotrade_buy(cdf1.iloc[i]['coin'],k.iloc[i]['k'],cdf1.iloc[i]['name'],cdf1.iloc[i]['min_num'],cdf1.iloc[i]['balance'])
-                i += 1
+ 
             count = 1
 
         else:
             for i in range(len(tickers)):
                 cdf1.iloc[i]['balance'] = autotrade_sell(cdf1.iloc[i]['coin'],cdf1.iloc[i]['name'],cdf1.iloc[i]['min_num'],cdf1.iloc[i]['balance'])
-                i += 1
+
             
             if count == 1:
                 kdf = pd.DataFrame()
