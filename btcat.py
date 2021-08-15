@@ -5,6 +5,10 @@ import math
 import pandas as pd
 import numpy as np
 
+
+program_start_time = datetime.datetime.now()
+print(program_start_time.strftime('%H:%M:%S'))
+
 ## Time infromation ##
 """경과 시간 함수"""
 def info_time(start):
@@ -246,6 +250,7 @@ def autotrade_sell(ticker,name,min_num):
 
 print("* Auto trade start")
 
+info_time(program_start_time)
 
 k_count = 1
 
@@ -262,7 +267,7 @@ while True:
                 for i in range(tickers_length):
                     ma20 = get_ma20(tickers[i])
                     current_price = get_current_price(tickers[i])
-                    if ma20 > current_price:
+                    if current_price > ma20:
                         cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                         time.sleep(0.1)
                     else:
