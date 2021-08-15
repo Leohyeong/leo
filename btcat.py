@@ -89,13 +89,20 @@ cdf = coin_data(balance) # 데이터 업데이트 함수 실행
 
 ## k data update ##
 """k 값 업데이트"""
-def get_ma20(ticker):
+def get_bol_lower(ticker):
     """20시간 이동 평균선 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
     time.sleep(0.1)
     ma20 = df['close'].rolling(20).mean().iloc[-1]
     bol_lower = ma20 - 2*df['close'].rolling(20).std().iloc[-1]
     return bol_lower
+
+def get_ma20(ticker):
+    """20시간 이동 평균선 조회"""
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+    time.sleep(0.1)
+    ma20 = df['close'].rolling(20).mean().iloc[-1]
+    return ma20
 
 def updateBestk(ticker):
 
@@ -105,7 +112,7 @@ def updateBestk(ticker):
             df['range'] = (df['high'] - df['low']) * k
             df['target'] = df['open'] + df['range'].shift(1)
 
-            df['ror'] = np.where(((df['high'] > df['target']) & (get_ma20(ticker) > df['open'])),
+            df['ror'] = np.where(df['high'] > df['target'],
                                 df['close'] / df['target'] - fee,
                                 1)
 
@@ -173,15 +180,40 @@ def autotrade_buy(ticker,k_buy,name,min_num,balance):
         target_price = get_target_price(ticker, k_buy)
         current_price = get_current_price(ticker)
         num = get_balance(name)
-        ma20 = get_ma20(ticker)
-        open = get_open_price(ticker)
 
-        if (target_price < current_price < target_price * 1.01) & (ma20 > open): ## 목표 단가에 매수
+        if target_price < current_price < target_price * 1.01: ## 목표 단가에 매수
             if (balance > 5000) & (num < min_num):
                 upbit.buy_market_order(ticker, balance * (1-fee))
                 balance = int(round(balance*(1-fee),-1))
                 print("Buy :", name ," price :" , balance)
-            
+
+        elif (num > min_num) & (target_price * 0.95 > current_price): ## 5퍼 하락시 매도
+                upbit.sell_market_order(ticker, num)
+                balance = num * get_current_price(ticker)
+                print("Sell :", name ," price :", balance)
+
+
+    except Exception as e:
+        print(e)
+        time.sleep(0.1)
+
+    return balance
+
+def autotrade_buy_bol(ticker,k_buy,name,min_num,balance):
+    try:
+
+        target_price = get_target_price(ticker, k_buy)
+        current_price = get_current_price(ticker)
+        num = get_balance(name)
+        bol_lower = get_bol_lower(ticker)
+        open = get_open_price(ticker)
+
+        if (target_price < current_price < target_price * 1.01) & (bol_lower > open): ## 목표 단가에 매수
+            if (balance > 5000) & (num < min_num):
+                upbit.buy_market_order(ticker, balance * (1-fee))
+                balance = int(round(balance*(1-fee),-1))
+                print("Buy_bol :", name ," price :" , balance)
+
         elif (num > min_num) & (target_price * 0.95 > current_price): ## 5퍼 하락시 매도
                 upbit.sell_market_order(ticker, num)
                 balance = num * get_current_price(ticker)
@@ -225,12 +257,18 @@ while True:
         end_time = start_time + datetime.timedelta(days=1)   
         
         if start_time < now < end_time - datetime.timedelta(minutes=10):
-            time.sleep(0.1)
-            i = 0
-            for i in range(tickers_length):
-                cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                 time.sleep(0.1)
-            k_count = 1
+                i = 0
+                for i in range(tickers_length):
+                    ma20 = get_ma20(tickers[i])
+                    current_price = get_current_price(tickers[i])
+                    if ma20 > current_price:
+                        cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
+                        time.sleep(0.1)
+                    else:
+                        cdf.iloc[i]['balance'] = autotrade_buy_bol(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
+                        time.sleep(0.1)    
+                k_count = 1
             
 
         else:
