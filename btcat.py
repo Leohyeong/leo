@@ -265,9 +265,9 @@ while True:
                 time.sleep(0.1)
                 i = 0
                 for i in range(tickers_length):
+                    open_price = get_open_price(tickers[i])
                     ma20 = get_ma20(tickers[i])
-                    current_price = get_current_price(tickers[i])
-                    if current_price > ma20:
+                    if open_price > ma20:
                         cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                         time.sleep(0.1)
                     else:
