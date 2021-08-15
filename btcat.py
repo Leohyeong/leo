@@ -26,6 +26,7 @@ def info_time(start):
 """"모든 코인 & 수수료"""
 tickers = pyupbit.get_tickers(fiat="KRW")
 tickers_length = len(tickers)
+# tickers_length = 2
 fee = 0.0005
 
 ## Login ##
@@ -84,29 +85,29 @@ def coin_data(bal):
             }
         )
         cdf_in = cdf_in.append(new_data)
-        cdf1 = cdf_in.copy()
 
     print("* Coin data update")
-    return cdf1
+    return cdf_in
 
-cdf = coin_data(balance) # 데이터 업데이트 함수 실행
+cdf_in = coin_data(balance) # 데이터 업데이트 함수 실행
+cdf = cdf_in.copy()
 
 ## k data update ##
 """k 값 업데이트"""
 def get_bol_lower(ticker):
-    """20시간 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+    """30일 이동 평균선 조회"""
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=30)
     time.sleep(0.1)
-    ma20 = df['close'].rolling(20).mean().iloc[-1]
-    bol_lower = ma20 - 2*df['close'].rolling(20).std().iloc[-1]
+    ma30 = df['close'].rolling(30).mean().iloc[-1]
+    bol_lower = ma30 - 2*df['close'].rolling(30).std().iloc[-1]
     return bol_lower
 
-def get_ma20(ticker):
-    """20시간 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
+def get_ma30(ticker):
+    """30일 이동 평균선 조회"""
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=30)
     time.sleep(0.1)
-    ma20 = df['close'].rolling(20).mean().iloc[-1]
-    return ma20
+    ma30 = df['close'].rolling(30).mean().iloc[-1]
+    return ma30
 
 def updateBestk(ticker):
 
@@ -135,7 +136,7 @@ def updateBestk(ticker):
         )
         kdf_val = kdf_val.append(new_kdf_val)
 
-    best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror']),'k']
+    best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror']),'k'].copy()
     
     return best_k
 
@@ -266,15 +267,15 @@ while True:
                 i = 0
                 for i in range(tickers_length):
                     open_price = get_open_price(tickers[i])
-                    ma20 = get_ma20(tickers[i])
-                    if open_price > ma20:
+                    ma30 = get_ma30(tickers[i])
+                    if open_price > ma30:
                         cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                         time.sleep(0.1)
                     else:
                         cdf.iloc[i]['balance'] = autotrade_buy_bol(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
-                        time.sleep(0.1)    
-                k_count = 1
-            
+                        time.sleep(0.1)                
+                if k_count == 0:
+                    k_count = 1
 
         else:
             i = 0
