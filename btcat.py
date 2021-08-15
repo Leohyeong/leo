@@ -96,18 +96,18 @@ cdf = cdf_in.copy()
 """k 값 업데이트"""
 def get_bol_lower(ticker):
     """30일 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=30)
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
     time.sleep(0.1)
-    ma30 = df['close'].rolling(30).mean().iloc[-1]
-    bol_lower = ma30 - 2*df['close'].rolling(30).std().iloc[-1]
+    ma20 = df['close'].rolling(20).mean().iloc[-1]
+    bol_lower = ma20 - 2*df['close'].rolling(20).std().iloc[-1]
     return bol_lower
 
-def get_ma30(ticker):
+def get_ma20(ticker):
     """30일 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=30)
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
     time.sleep(0.1)
-    ma30 = df['close'].rolling(30).mean().iloc[-1]
-    return ma30
+    ma20 = df['close'].rolling(20).mean().iloc[-1]
+    return ma20
 
 def updateBestk(ticker):
 
@@ -267,8 +267,8 @@ while True:
                 i = 0
                 for i in range(tickers_length):
                     open_price = get_open_price(tickers[i])
-                    ma30 = get_ma30(tickers[i])
-                    if open_price > ma30:
+                    ma20 = get_ma20(tickers[i])
+                    if open_price > ma20:
                         cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                         time.sleep(0.1)
                     else:
