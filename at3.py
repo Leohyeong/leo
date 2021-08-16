@@ -13,7 +13,7 @@ n = 3
 tickers = pyupbit.get_tickers(fiat="KRW")
 tickers_start = 17*(n-1)
 tickers_end = tickers_start + 17
-tickers_length = len(tickers)/6
+tickers_length = 17
 
 fee = 0.0005
 
