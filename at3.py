@@ -233,7 +233,7 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)   
         
-        if start_time < now < end_time - datetime.timedelta(minutes=5):
+        if start_time < now < end_time - datetime.timedelta(minutes=1):
             if get_balance("KRW") > 5000:
                 i = 0
                 for i in range(tickers_length):    
