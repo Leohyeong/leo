@@ -5,7 +5,7 @@ import math
 import pandas as pd
 import numpy as np
 
-n = 5
+n = 4
 
 ## All coin import ##
 """"모든 코인 & 수수료"""
