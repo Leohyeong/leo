@@ -5,10 +5,16 @@ import math
 import pandas as pd
 import numpy as np
 
+n = 1
+
 ## All coin import ##
 """"모든 코인 & 수수료"""
+
 tickers = pyupbit.get_tickers(fiat="KRW")
-tickers_length = 17
+tickers_start = 17*(n-1)
+tickers_end = tickers_start + 17
+tickers_length = len(tickers)/6
+
 fee = 0.0005
 
 ## Login ##
@@ -16,10 +22,7 @@ fee = 0.0005
 access = "xYEholhmUOxsVOLoAh6NdxE0HQT2meKq4nxBUaXB"
 secret = "Kny70chrbB0d8x9x1hdmNgclVqepcUuxo4YZDoco"
 upbit = pyupbit.Upbit(access, secret)
-print("* Login complete")
 
-## Divide balance ##
-"""잔고 배분"""
 def get_balance(ticker):
     """잔고 조회"""
     balances = upbit.get_balances()
@@ -31,18 +34,8 @@ def get_balance(ticker):
                 return 0
     return 0
 
-def divideBalance():
-    num_div = len(tickers)
-    for i in range(len(tickers)):
-        if get_balance(tickers[i][tickers[i].find('-')+1:]) > 0:
-            num_div -= 1
-    balan = float(math.floor((upbit.get_balance('KRW')*(1-fee))/num_div))
-    return balan
-
 balance = 20000 * (1 + fee)
 
-## Coin data update ##
-"""데이터 업데이트"""
 def get_current_price(ticker):
     """현재가 조회"""
     time.sleep(0.1)
@@ -52,7 +45,7 @@ def coin_data(bal):
     
     cdf_in = pd.DataFrame()
     
-    for i in range(tickers_length):
+    for i in range(tickers_start,tickers_end):
         num = get_balance(tickers[i][tickers[i].find('-')+1:])
         if  num > 0:
             bal_in = 0
@@ -72,6 +65,7 @@ def coin_data(bal):
 
 cdf_in = coin_data(balance) # 데이터 업데이트 함수 실행
 cdf = cdf_in.copy()
+
 
 ## k data update ##
 """k 값 업데이트"""
@@ -124,7 +118,7 @@ def updateBestk(ticker):
 def assignk():
     kdf_in = pd.DataFrame()
 
-    for i in range(tickers_length): # len(tickers)
+    for i in range(tickers_start,tickers_end): # len(tickers)
         new_kdf = pd.DataFrame(
             {
             'k' :updateBestk(tickers[i])
@@ -132,7 +126,6 @@ def assignk():
         )
         kdf_in = kdf_in.append(new_kdf)
 
-    print("* K data update")
     kdf1 = kdf_in.copy()
     return kdf1
 
@@ -243,14 +236,14 @@ while True:
         if start_time < now < end_time - datetime.timedelta(minutes=5):
                 time.sleep(0.1)
                 i = 0
-                for i in range(tickers_length):
+                for i in range(tickers_length):    
                     open_price = get_open_price(tickers[i])
                     ma20 = get_ma20(tickers[i])
                     if open_price > ma20:
-                        cdf.iloc[i]['balance'] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
+                        cdf.iloc[i]['balance'] = autotrade_buy(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                         print(tickers[i])
                     else:
-                        cdf.iloc[i]['balance'] = autotrade_buy_bol(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
+                        cdf.iloc[i]['balance'] = autotrade_buy_bol(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                         time.sleep(0.1)                
                 if k_count == 0:
                     k_count = 1
@@ -258,7 +251,7 @@ while True:
         else:
             i = 0
             for i in range(tickers_length):
-                cdf.iloc[i]['balance'] = autotrade_sell(tickers[i],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
+                cdf.iloc[i]['balance'] = autotrade_sell(cdf.iloc[i]['coin'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
                 time.sleep(0.1)
             if k_count == 1:
                 kdf = assignk()
