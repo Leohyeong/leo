@@ -234,7 +234,7 @@ while True:
         end_time = start_time + datetime.timedelta(days=1)   
         
         if start_time < now < end_time - datetime.timedelta(minutes=5):
-                time.sleep(0.1)
+            if get_balance("KRW") > 5000:
                 i = 0
                 for i in range(tickers_length):    
                     open_price = get_open_price(tickers[i])
@@ -247,7 +247,8 @@ while True:
                         time.sleep(0.1)                
                 if k_count == 0:
                     k_count = 1
-
+            else:
+                print("No happen")       
         else:
             i = 0
             for i in range(tickers_length):
