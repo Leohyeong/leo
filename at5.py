@@ -1,11 +1,10 @@
 import time
 import pyupbit
 import datetime
-import math
 import pandas as pd
 import numpy as np
 
-n = 5
+n = 1
 
 ## All coin import ##
 """"모든 코인 & 수수료"""
@@ -188,6 +187,7 @@ def autotrade_buy_bol(ticker,k_buy,name,min_num,balance):
         open = get_open_price(ticker)
 
         if (target_price < current_price < target_price * 1.01) & (bol_lower > open): ## 목표 단가에 매수
+
             if (balance > 5000) & (num < min_num):
                 upbit.buy_market_order(ticker, balance * (1-fee))
                 balance = int(round(balance*(1-fee),-1))
@@ -214,7 +214,6 @@ def autotrade_sell(ticker,name,min_num):
             balance = num * get_current_price(ticker)
             print("Sell :", name ," price :", balance)
 
-        # time.sleep(0.1)
 
     except Exception as e:
         print(e)
@@ -225,6 +224,9 @@ def autotrade_sell(ticker,name,min_num):
 ## AutoTrade ##
 
 k_count = 1
+myBalance = []
+for i in range(tickers_length):
+    myBalance.append(0)
 
 while True:
     try:
@@ -233,27 +235,25 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)   
         
-        if start_time < now < end_time - datetime.timedelta(minutes=1):
+        if start_time < now < end_time - datetime.timedelta(seconds=90):
             if get_balance("KRW") > 5000:
                 i = 0
                 for i in range(tickers_length):    
                     open_price = get_open_price(tickers[i])
                     ma20 = get_ma20(tickers[i])
                     if open_price > ma20:
-                        cdf.iloc[i]['balance'] = autotrade_buy(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
-                        print(tickers[i])
+                        myBalance[i] = autotrade_buy(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                     else:
-                        cdf.iloc[i]['balance'] = autotrade_buy_bol(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
+                        myBalance[i] = autotrade_buy_bol(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                         time.sleep(0.1)                
                 if k_count == 0:
                     k_count = 1
             else:
-                print("No happen")       
+                print("No happen")      
         else:
             i = 0
             for i in range(tickers_length):
-                cdf.iloc[i]['balance'] = autotrade_sell(cdf.iloc[i]['coin'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
-                time.sleep(0.1)
+                myBalance[i] = autotrade_sell(cdf.iloc[i]['coin'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
             if k_count == 1:
                 kdf = assignk()
                 k_count = 0   
