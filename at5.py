@@ -4,7 +4,7 @@ import datetime
 import pandas as pd
 import numpy as np
 
-n = 1
+n = 5
 
 ## All coin import ##
 """"모든 코인 & 수수료"""
