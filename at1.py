@@ -186,7 +186,7 @@ def autotrade_buy_bol(ticker,k_buy,name,min_num,balance):
         bol_lower = get_bol_lower(ticker)
         open = get_open_price(ticker)
 
-        if (target_price < current_price < target_price * 1.01) & (bol_lower > open): ## 목표 단가에 매수
+        if (target_price < current_price < target_price * 1.005) & (bol_lower > open): ## 목표 단가에 매수
 
             if (balance > 5000) & (num < min_num):
                 upbit.buy_market_order(ticker, balance * (1-fee))
