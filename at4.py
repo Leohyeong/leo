@@ -324,7 +324,7 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)   
         
-        if start_time < now < end_time - datetime.timedelta(seconds=90):
+        if start_time < now < end_time - datetime.timedelta(minuets=4):
                 time.sleep(0.1)
                 i = 0
                 for i in range(tickers_start,tickers_end):
@@ -341,7 +341,7 @@ while True:
         else:
             i = 0
             for i in range(tickers_start,tickers_end):
-                cdf.iloc[i]['balance'] = autotrade_sell(tickers[i],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
+                myBalance[i] = autotrade_sell(tickers[i],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
                 # time.sleep(0.1)
             if k_count == 1:
                 if get_current_price("KRW-BTC") > get_ma20("KRW-BTC"):
