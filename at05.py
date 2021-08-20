@@ -135,10 +135,13 @@ def updateBestk(ticker):
 
             ror = df['ror'].cumprod()[-2]
             return ror
+    # 메인 영역
+    
 
     kdf_val = pd.DataFrame()
     
     for k in np.arange(0.01, 1.0, 0.01):
+
         ror = get_ror(ticker,k)
         new_kdf_val = pd.DataFrame(
             {
@@ -327,21 +330,21 @@ while True:
         if start_time < now < end_time - datetime.timedelta(minutes=4):
                 time.sleep(0.1)
                 i = 0
-                for i in range(tickers_start,tickers_end):
-                    open_price = get_open_price(tickers[i])
-                    ma20 = get_ma20(tickers[i])
+                for i in range(tickers_length):
+                    open_price = get_open_price(cdf.iloc[i]['coin'])
+                    ma20 = get_ma20(cdf.iloc[i]['coin'])
                     if open_price > ma20:
-                        myBalance[i] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
-                        print(tickers[i])
+                        myBalance[i] = autotrade_buy(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
+                        print(cdf.iloc[i]['coin'])
                     else:
-                        myBalance[i] = autotrade_buy_bol(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])            
+                        myBalance[i] = autotrade_buy_bol(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])            
                 if k_count == 0:
                     k_count = 1
 
         else:
             i = 0
-            for i in range(tickers_start,tickers_end):
-                myBalance[i] = autotrade_sell(tickers[i],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
+            for i in range(tickers_length):
+                myBalance[i] = autotrade_sell(cdf.iloc[i]['coin'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
                 # time.sleep(0.1)
             if k_count == 1:
                 if get_current_price("KRW-BTC") > get_ma20("KRW-BTC"):
