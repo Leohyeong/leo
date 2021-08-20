@@ -6,7 +6,7 @@ import math
 import pandas as pd
 import numpy as np
 
-n=4
+n=3
 
 program_start_time = datetime.datetime.now()
 print(program_start_time.strftime('%H:%M:%S'))
