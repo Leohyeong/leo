@@ -8,22 +8,6 @@ import numpy as np
 
 n=2
 
-program_start_time = datetime.datetime.now()
-print(program_start_time.strftime('%H:%M:%S'))
-
-## Time infromation ##
-"""경과 시간 함수"""
-def info_time(start):
-    print("start time : " + start.strftime('%H:%M:%S'))
-
-    end = datetime.datetime.now()
-
-    print("end time : " + end.strftime('%H:%M:%S'))
-
-    gap = end - start
-
-    print("Total time lapse : " + str(gap))
-
 ## All coin import ##
 """"모든 코인 & 수수료"""
 
@@ -63,14 +47,11 @@ def divideBalance():
     return balan
 
 balance = divideBalance() # 잔고 배분 함수 실행
-print(balance)
-# balance = 20000 * (1 + fee)
 
 ## Coin data update ##
 """데이터 업데이트"""
 def get_current_price(ticker):
     """현재가 조회"""
-    # time.sleep(0.1)
     return pyupbit.get_orderbook(tickers=ticker)[0]["orderbook_units"][0]["ask_price"]
 
 def coin_data(bal):
@@ -91,18 +72,12 @@ def coin_data(bal):
             'min_num' : [5000/get_current_price(tickers[i])]
             }
         )
-        print(new_data)
         cdf_in = cdf_in.append(new_data)
-        
 
-    print("* Coin data update")
-    info_time(program_start_time)
     return cdf_in
 
 cdf_in = coin_data(balance) # 데이터 업데이트 함수 실행
 cdf = cdf_in.copy()
-# cdf = cdf.to_excel("cdf.xlsx")
-# cdf = pd.read_excel("cdf.xlsx")
 
 ## k data update ##
 """k 값 업데이트"""
@@ -135,8 +110,6 @@ def updateBestk(ticker):
 
             ror = df['ror'].cumprod()[-2]
             return ror
-    # 메인 영역
-    
 
     kdf_val = pd.DataFrame()
     
@@ -152,7 +125,6 @@ def updateBestk(ticker):
         kdf_val = kdf_val.append(new_kdf_val)
 
     best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror']),'k'].copy()
-    print(best_k)
     
     return best_k
 
@@ -184,7 +156,6 @@ def updateBestk_bol(ticker):
         kdf_val = kdf_val.append(new_kdf_val)
 
     best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror']),'k'].copy()
-    print(best_k)
     
     return best_k
 
@@ -199,9 +170,9 @@ def assignk():
         )
         kdf_in = kdf_in.append(new_kdf)
 
-    print("* K data update")
+
     kdf1 = kdf_in.copy()
-    print(kdf1)
+
     return kdf1
 
 def assignk_bol():
@@ -215,20 +186,17 @@ def assignk_bol():
         )
         kdf_in = kdf_in.append(new_kdf)
 
-    print("* k_bol data update")
     kdf1 = kdf_in.copy()
-    print(kdf1)
+
     return kdf1
 
 ma20 = get_ma20("KRW-BTC")
+btc_price = get_current_price("KRW-BTC")
 
-if get_current_price("KRW-BTC") > ma20:
+if  btc_price > ma20:
     kdf = assignk()
 else:
     kdf_bol = assignk_bol()
-
-# kdf = pd.read_excel("kdf.xlsx")
-
 
 ## Function ##
 
@@ -301,8 +269,6 @@ def autotrade_sell(ticker,name,min_num):
             balance = num * get_current_price(ticker)
             print("Sell :", name ," price :", balance)
 
-        # time.sleep(0.1)
-
     except Exception as e:
         print(e)
         time.sleep(0.1)
@@ -312,8 +278,6 @@ def autotrade_sell(ticker,name,min_num):
 ## AutoTrade ##
 
 print("* Auto trade start")
-
-info_time(program_start_time)
 
 k_count = 1
 myBalance = []
@@ -335,7 +299,6 @@ while True:
                     ma20 = get_ma20(cdf.iloc[i]['coin'])
                     if open_price > ma20:
                         myBalance[i] = autotrade_buy(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
-                        print(cdf.iloc[i]['coin'])
                         time.sleep(0.1)
                     else:
                         myBalance[i] = autotrade_buy_bol(cdf.iloc[i]['coin'],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
@@ -347,7 +310,7 @@ while True:
             i = 0
             for i in range(tickers_length):
                 myBalance[i] = autotrade_sell(cdf.iloc[i]['coin'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
-                # time.sleep(0.1)
+                time.sleep(0.1)
             if k_count == 1:
                 if get_current_price("KRW-BTC") > get_ma20("KRW-BTC"):
                     kdf = assignk()
