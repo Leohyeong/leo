@@ -28,9 +28,9 @@ def info_time(start):
 """"모든 코인 & 수수료"""
 
 tickers = pyupbit.get_tickers(fiat="KRW")
-tickers_start = 6 * (n-1)
-tickers_end = tickers_start + 6
-tickers_length = 6
+tickers_start = 17 * (n-1)
+tickers_end = tickers_start + 17
+tickers_length = 17
 
 fee = 0.0005
 
@@ -324,7 +324,7 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)   
         
-        if start_time < now < end_time - datetime.timedelta(minuets=4):
+        if start_time < now < end_time - datetime.timedelta(minuets=10):
                 time.sleep(0.1)
                 i = 0
                 for i in range(tickers_start,tickers_end):
