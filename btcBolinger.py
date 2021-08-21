@@ -147,7 +147,7 @@ def updateBestk(ticker):
         kdf_val = kdf_val.append(new_kdf_val)
 
     best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror']),'k'].copy()
-    print(best_k)
+    print(ticker, best_k)
     
     return best_k
 
@@ -179,7 +179,7 @@ def updateBestk_bol(ticker):
         kdf_val = kdf_val.append(new_kdf_val)
 
     best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror']),'k'].copy()
-    print(best_k)
+    print(ticker, best_k)
     
     return best_k
 
@@ -215,12 +215,13 @@ def assignk_bol():
     print(kdf1)
     return kdf1
 
-ma20 = get_ma20("KRW-BTC")
+# ma20 = get_ma20("KRW-BTC")
+# if get_current_price("KRW-BTC") > ma20:
+#     kdf = assignk()
+# else:
+#     kdf_bol = assignk_bol()
 
-if get_current_price("KRW-BTC") > ma20:
-    kdf = assignk()
-else:
-    kdf_bol = assignk_bol()
+kdf = assignk_bol()
 
 # kdf = pd.read_excel("kdf.xlsx")
 
@@ -306,9 +307,9 @@ def autotrade_sell(ticker,name,min_num):
 
 ## AutoTrade ##
 
-print("* Auto trade start")
-
 info_time(program_start_time)
+
+print("* Auto trade start")
 
 k_count = 1
 myBalance = []
@@ -322,7 +323,7 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)   
         
-        if start_time < now < end_time - datetime.timedelta(minutes=3):
+        if start_time < now < end_time - datetime.timedelta(minutes=5):
                 time.sleep(0.1)
                 i = 0
                 for i in range(tickers_length):
@@ -349,10 +350,11 @@ while True:
                 myBalance[i] = autotrade_sell(tickers[i],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
                 time.sleep(0.1)
             if k_count == 1:
-                if get_current_price("KRW-BTC") > get_ma20("KRW-BTC"):
-                    kdf = assignk()
-                else:
-                    kdf_bol = assignk_bol()
+                # if get_current_price("KRW-BTC") > get_ma20("KRW-BTC"):
+                #     kdf = assignk()
+                # else:
+                #     kdf = assignk_bol()
+                kdf = assignk_bol()
                 k_count = 0   
 
         time.sleep(0.2)
