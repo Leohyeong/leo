@@ -14,16 +14,16 @@ tickers_length = len(tickers)
 fee = 0.0005
 ## Infomation Time ##
 """시간 및 날짜"""
-def info_time(start_time):
-    print("\nstart time : " + start_time.strftime('%H:%M:%S'))
+# def info_time(start_time):
+#     print("\nstart time : " + start_time.strftime('%H:%M:%S'))
 
-    end_time = datetime.datetime.now()
+#     end_time = datetime.datetime.now()
 
-    print("end time : " + end_time.strftime('%H:%M:%S'))
+#     print("end time : " + end_time.strftime('%H:%M:%S'))
 
-    gap = end_time - start_time
+#     gap = end_time - start_time
 
-    print("Total time lapse : " + str(gap))
+#     print("Total time lapse : " + str(gap))
 
 start_day = datetime.datetime(2021,4,13)
 today = datetime.datetime.now()
@@ -92,7 +92,7 @@ def coin_data(bal):
 
 cdf_in = coin_data(balance) # 데이터 업데이트 함수 실행
 cdf = cdf_in.copy()
-print(cdf)
+# print(cdf)
 
 ## k data update ##
 """k 값 업데이트"""
@@ -125,7 +125,7 @@ def updateK(ticker):
         kdf_val = kdf_val.append(new_kdf_val)
 
     best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror']),'k'].copy()
-    print(ticker,best_k)
+#     print(ticker,best_k)
     return best_k
 
 def assignk():
@@ -142,9 +142,9 @@ def assignk():
     kdf1 = kdf_in.copy()
 
     return kdf1
-s = datetime.datetime.now()
+# s = datetime.datetime.now()
 kdf = assignk()
-info_time(s)
+# info_time(s)
 ## Function ##
 
 def get_target_price(ticker, k_val):
@@ -224,7 +224,7 @@ while True:
 
                     myBalance[i] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
                     time.sleep(0.1) 
-                    print(tickers[i])          
+#                     print(tickers[i])          
                 
                 if k_count == 0:
                     k_count = 1
