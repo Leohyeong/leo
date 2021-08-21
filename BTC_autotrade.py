@@ -8,10 +8,26 @@ import numpy as np
 ## All coin import ##
 """"모든 코인 & 수수료"""
 
-tickers = ["KRW-BTC","KRW-DOT","KRW-ETH","KRW-ETC","KRW-XRP","KRW-DOGE"]
+tickers = ["KRW-BTC","KRW-ETH","KRW-XRP"]
 tickers_length = len(tickers)
 
 fee = 0.0005
+## Infomation Time ##
+"""시간 및 날짜"""
+def info_time(start_time):
+    print("\nstart time : " + start_time.strftime('%H:%M:%S'))
+
+    end_time = datetime.datetime.now()
+
+    print("end time : " + end_time.strftime('%H:%M:%S'))
+
+    gap = end_time - start_time
+
+    print("Total time lapse : " + str(gap))
+
+start_day = datetime.datetime(2021,4,13)
+today = datetime.datetime.now()
+days = (today-start_day).days
 
 ## Login ##
 """로그인"""
@@ -76,34 +92,20 @@ def coin_data(bal):
 
 cdf_in = coin_data(balance) # 데이터 업데이트 함수 실행
 cdf = cdf_in.copy()
+print(cdf)
 
 ## k data update ##
 """k 값 업데이트"""
 
-def get_bol_lower(ticker):
-    """30일 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
-    time.sleep(0.1)
-    ma20 = df['close'].rolling(20).mean().iloc[-1]
-    bol_lower = ma20 - 2 * df['close'].rolling(20).std().iloc[-1]
-    return bol_lower
-
-def get_ma20(ticker):
-    """30일 이동 평균선 조회"""
-    df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
-    time.sleep(0.1)
-    ma20 = df['close'].rolling(20).mean().iloc[-1]
-    return ma20
-
-def updateBestk_bol(ticker):
+def updateK(ticker):
 
     def get_ror(ticker,k=0.5):
-            df = pyupbit.get_ohlcv(ticker,interval="day",count=200)
+            df = pyupbit.get_ohlcv(ticker,interval="day",count=days)
             time.sleep(0.1)
             df['range'] = (df['high'] - df['low']) * k
             df['target'] = df['open'] + df['range'].shift(1)
 
-            df['ror'] = np.where(((df['high'] > df['target']) & (get_bol_lower(ticker)>df['open'])),
+            df['ror'] = np.where(df['high'] > df['target'],
                                 df['close'] / df['target'] - fee,
                                 1)
 
@@ -123,16 +125,16 @@ def updateBestk_bol(ticker):
         kdf_val = kdf_val.append(new_kdf_val)
 
     best_k = kdf_val.loc[kdf_val['ror']==max(kdf_val['ror']),'k'].copy()
-    
+    print(ticker,best_k)
     return best_k
 
-def assignk_bol():
+def assignk():
     kdf_in = pd.DataFrame()
 
     for i in range(tickers_length): # len(tickers)
         new_kdf = pd.DataFrame(
             {
-            'k' :updateBestk_bol(tickers[i])
+            'k' :updateK(tickers[i])
             }
         )
         kdf_in = kdf_in.append(new_kdf)
@@ -140,10 +142,9 @@ def assignk_bol():
     kdf1 = kdf_in.copy()
 
     return kdf1
-
-kdf = assignk_bol()
-
-
+s = datetime.datetime.now()
+kdf = assignk()
+info_time(s)
 ## Function ##
 
 def get_target_price(ticker, k_val):
@@ -166,16 +167,14 @@ def get_start_time(ticker):
     start_time = df.index[0]
     return start_time
 
-def autotrade_buy_bol(ticker,k_buy,name,min_num,balance):
+def autotrade_buy(ticker,k_buy,name,min_num,balance):
     try:
 
         target_price = get_target_price(ticker, k_buy)
         current_price = get_current_price(ticker)
         num = get_balance(name)
-        bol_lower = get_bol_lower(ticker)
-        open = get_open_price(ticker)
 
-        if (target_price <= current_price <= target_price * 1.005) & (bol_lower > open): ## 목표 단가에 매수
+        if target_price <= current_price <= target_price * 1.005: ## 목표 단가에 매수
             if (balance > 5000) & (num < min_num):
                 upbit.buy_market_order(ticker, balance * (1-fee))
                 balance = int(round(balance*(1-fee),-1))
@@ -218,13 +217,14 @@ while True:
         start_time = get_start_time("KRW-BTC")
         end_time = start_time + datetime.timedelta(days=1)   
         
-        if start_time < now < end_time - datetime.timedelta(minutes=9):
+        if start_time < now < end_time - datetime.timedelta(minutes=2):
                 time.sleep(0.1)
                 i = 0
                 for i in range(tickers_length):
 
-                    myBalance[i] = autotrade_buy_bol(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
-                    time.sleep(0.1)           
+                    myBalance[i] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
+                    time.sleep(0.1) 
+                    print(tickers[i])          
                 
                 if k_count == 0:
                     k_count = 1
@@ -235,7 +235,7 @@ while True:
                 myBalance[i] = autotrade_sell(tickers[i],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'])
                 time.sleep(0.1)
             if k_count == 1:
-                kdf = assignk_bol()
+                kdf = assignk()
                 k_count = 0   
 
         time.sleep(0.2)
