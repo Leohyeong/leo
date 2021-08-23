@@ -208,7 +208,9 @@ def autotrade_sell(ticker,name,min_num):
 k_count = 1
 myBalance = []
 for i in range(tickers_length):
-    myBalance.append(0)
+    myBalance.append(cdf.iloc[i]['balance'])
+
+# print(myBalance)
 
 while True:
     try:
@@ -222,7 +224,7 @@ while True:
                 i = 0
                 for i in range(tickers_length):
 
-                    myBalance[i] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],cdf.iloc[i]['balance'])
+                    myBalance[i] = autotrade_buy(tickers[i],kdf.iloc[i]['k'],cdf.iloc[i]['name'],cdf.iloc[i]['min_num'],myBalance[i])
                     time.sleep(0.1) 
 #                     print(tickers[i])          
                 
